@@ -205,7 +205,7 @@ simulate_f_stat <- function(big_T = 1000, d = 1, the_kernel = bartlett, q=1, lug
 # Run Simulation  ---------------------------------------------------------
 # -------------------------------------------------------------------------
 
-generate_cv_multi <- function(b, d = 1, alpha = 0.05,
+generate_cv_multi <- function(b, d = 2, alpha = 0.05,
                         the_kernel = bartlett, lugsail_type = "Mother",
                         num_replicates = 50000, replicate_size = 1000){
   big_T <- replicate_size

@@ -150,11 +150,15 @@ get_kernel_F_stats <- function(new_b, all_sim_data, the_means,
 
 # Main --------------------------------------------------------------------
 
-simulate_f_stat <- function(new_b = b, alpha, big_T = 1000, num_sims = 100, null_mean = 0, the_kernel = bartlett, lugsail_type = "Mother"){
+generate_cv_uni <- function(b, alpha = 0.05, the_kernel = bartlett, lugsail_type = "Mother", replicate_size = 1000, num_replicates = 50000){
+
+  new_b = b
+  null_mean = 0
+  big_T = replicate_size
   # ------- Simulate all of the data  -------
   # [#,  ] each value for a single simulation, 1:big_T
-  # [ , #]  each simulation 1:num_sims
-  all_sim_data <- replicate(num_sims, rnorm(big_T))
+  # [ , #]  each simulation 1:num_replicates
+  all_sim_data <- replicate(num_replicates, rnorm(big_T))
   orig_sim_data <- all_sim_data
 
   # Location model, get error terms
@@ -163,7 +167,7 @@ simulate_f_stat <- function(new_b = b, alpha, big_T = 1000, num_sims = 100, null
 
   # ------- AutoCovariance Matrices  -------
   # [#,  ] the lag, (0, ..., big_T-1)
-  # [ , #]  each simulation, 1:num_sims
+  # [ , #]  each simulation, 1:num_replicates
   all_autocovariances <- apply(all_sim_data, 2, all_R)
 
   # ------- F-statistics for various b values -------
@@ -190,16 +194,16 @@ simulate_f_stat <- function(new_b = b, alpha, big_T = 1000, num_sims = 100, null
 
 set.seed(62)
 
-CVs <- simulate_f_stat(new_b = c(0.005), alpha = c(0.05, 0.01),
-                       big_T = 1000, num_sims = 10,
-                       null_mean = 0, the_kernel = bartlett,
-                       lugsail_type = "Mother")
+CVs <- generate_cv_uni(b = c(0.005), alpha = c(0.05, 0.01),
+                       the_kernel = bartlett,
+                       lugsail_type = "Mother",
+                       replicate_size = 1000,num_replicates = 10)
 CVs
 
-CVs <- simulate_f_stat(new_b = c(0.005,0.05), alpha = c(0.05, 0.01),
-                                           big_T = 1000, num_sims = 10,
-                                               null_mean = 0, the_kernel = bartlett,
-                                               lugsail_type = "Zero")
+CVs <- generate_cv_uni(b = c(0.005,0.05), alpha = c(0.05, 0.01),
+                       the_kernel = bartlett,
+                       lugsail_type = "Mother",
+                       replicate_size = 1000,num_replicates = 10)
 CVs
 
 

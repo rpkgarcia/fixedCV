@@ -129,9 +129,6 @@ F_stats <- function(the_means, omega_hats, d = 1, big_T, null_means = rep(0, d))
 }
 
 
-
-# Generate all F_stats by Kernel Family -----------------------------------
-
 get_kernel_F_stats <- function(new_b, the_means, d, all_autocovariances,
                                the_kernel, lugsail, big_T, q = 1){
   # Need this for psd corrections.
@@ -201,35 +198,61 @@ simulate_f_stat <- function(big_T = 1000, d = 1, the_kernel = bartlett, q=1, lug
   return(c(F_kernel))
 }
 
-# -------------------------------------------------------------------------
-# Run Simulation  ---------------------------------------------------------
-# -------------------------------------------------------------------------
+# Main --------------------------------------------------------------------
 
 generate_cv_multi <- function(b, d = 2, alpha = 0.05,
-                        the_kernel = bartlett, lugsail_type = "Mother",
+                        the_kernel = bartlett, lugsail_type = "Mother",  q=1,
+                        return_F_stats = F,
                         num_replicates = 50000, replicate_size = 1000){
+
   big_T <- replicate_size
 
   # Each row is a b values
   # Each column is a simulated data set
-  test_stats <- replicate(num_replicates,
+  F_stats <- replicate(num_replicates,
                             simulate_f_stat(big_T = big_T, d = d,
                                             the_kernel = the_kernel, q=q,  new_b = b))
 
+  F_stats <- matrix(c(t(F_stats)), nrow = num_replicates, ncol = length(b))
+  rownames(F_stats) <- paste("Sim", 1:num_replicates, sep = "")
+  colnames(F_stats) <- paste("b = ", b, sep = "")
+
+  # if(length(b) == 1){
+  #   critical_values <- sapply(alpha, function(the_alpha) {
+  #     quantile(F_stats, probs = (1-the_alpha))
+  #   })
+  # } else{
+  #   critical_values <- sapply(alpha, function(the_alpha) {
+  #     apply(F_stats, 2, quantile, probs = (1-the_alpha))
+  #   })
+  # }
+
   critical_values <- sapply(alpha, function(the_alpha) {
-    apply(test_stats, 1, quantile, probs = (1-the_alpha))
-    })
-  critical_values <- matrix(c(critical_values), nrow = length(new_b), ncol = length(alpha))
-  rownames(critical_values) <- paste("b = ", new_b, sep = "")
+    apply(F_stats, 2, quantile, probs = (1-the_alpha))
+  })
+
+  critical_values <- matrix(c(critical_values), nrow = length(b), ncol = length(alpha))
+  rownames(critical_values) <- paste("b = ", b, sep = "")
   colnames(critical_values) <- paste("alpha = ", alpha, sep = "")
 
-  return(critical_values)
+
+  if(return_F_stats){
+    return(list(CV = critical_values, F_stats = F_stats))
+  } else{
+    return(critical_values)
+  }
 }
 
 
 # Example
 set.seed(26)
-generate_cv_multi(b = c(0.1, 0.05), d = 2, the_kernel = bartlett, num_replicates = 50)
+generate_cv_multi(b = c(0.1, 0.05), d = 2, the_kernel = bartlett,
+                  return_F_stats = T, num_replicates = 10)
+
+
+
+generate_cv_multi(b = c(0.1), d = 2, alpha = c(0.05, 0.01),
+                  the_kernel = bartlett, return_F_stats = T, num_replicates = 10)
 
 
 

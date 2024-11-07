@@ -10,7 +10,7 @@ library(Matrix)
 
 # Estimate LRV  -----------------------------------------------------------
 
-LRV_estimator <- function(new_b, all_sim_data, the_means, all_autocovariances,
+LRV_estimator_uni <- function(new_b, all_sim_data, the_means, all_autocovariances,
                           the_kernel, lugsail_parameters = list(r = 1, c= 0),
                           mother_omega){
 
@@ -46,7 +46,7 @@ LRV_estimator <- function(new_b, all_sim_data, the_means, all_autocovariances,
 
 
 
-LRV_mother_estimator <- function(new_b, all_sim_data, the_means,
+LRV_mother_estimator_uni <- function(new_b, all_sim_data, the_means,
                                  all_autocovariances, the_kernel){
   big_T <- nrow(all_sim_data)
   # Make the wieghts that correspond to the autocovariances
@@ -96,7 +96,7 @@ LRV_mother_estimator <- function(new_b, all_sim_data, the_means,
 #     - a named list, list(r = 1, c= 0) that contains the lugsail parameters
 #     - default is non-lugsail
 
-F_stats <- function(the_means, omega_hats,  big_T, null_mean = 0){
+F_stats_uni <- function(the_means, omega_hats,  big_T, null_mean = 0){
 
   # ------- F-statistics for various b values -------
   # [ #,  ] a different b value
@@ -111,36 +111,36 @@ F_stats <- function(the_means, omega_hats,  big_T, null_mean = 0){
 
 
 
-get_kernel_F_stats <- function(new_b, all_sim_data, the_means,
+get_kernel_F_stats_uni <- function(new_b, all_sim_data, the_means,
                                all_autocovariances, the_kernel, q = 1, lugsail_type){
   big_T <- nrow(all_sim_data)
   # Mother Kernel
-  omega_mother <- LRV_mother_estimator(new_b, all_sim_data, the_means,
+  omega_mother <- LRV_mother_estimator_uni(new_b, all_sim_data, the_means,
                                        all_autocovariances, the_kernel)
   if(lugsail_type == "Mother"){
-    simulated_F_stats <- t(F_stats(the_means, omega_mother, big_T))
+    simulated_F_stats <- t(F_stats_uni(the_means, omega_mother, big_T))
   }
 
   # Zero lugsail
   else if(lugsail_type == "Zero"){
     lug_para <- get_lugsail_parameters(big_T, q = q, method = "Zero")
-    omega_zero <- LRV_estimator(new_b, all_sim_data,
+    omega_zero <- LRV_estimator_uni(new_b, all_sim_data,
                                 the_means, all_autocovariances,
                                 the_kernel = the_kernel,
                                 lugsail_parameters = lug_para,
                                 mother_omega = omega_mother)
-    simulated_F_stats <- t(F_stats(the_means, omega_zero, big_T))
+    simulated_F_stats <- t(F_stats_uni(the_means, omega_zero, big_T))
   }
 
   # Over Lugsail
   else if(lugsail_type == "Over"){
     lug_para <- get_lugsail_parameters(big_T, q = q, method = "Over")
-    omega_over <- LRV_estimator(new_b, all_sim_data,
+    omega_over <- LRV_estimator_uni(new_b, all_sim_data,
                                 the_means, all_autocovariances,
                                 the_kernel= the_kernel,
                                 lugsail_parameters = lug_para,
                                 mother_omega = omega_mother)
-    simulated_F_stats <- t(F_stats(the_means, omega_over, big_T))
+    simulated_F_stats <- t(F_stats_uni(the_means, omega_over, big_T))
   }
 
   return(simulated_F_stats)
@@ -150,10 +150,8 @@ get_kernel_F_stats <- function(new_b, all_sim_data, the_means,
 
 # Main --------------------------------------------------------------------
 
-generate_cv_uni <- function(b, alpha = 0.05, the_kernel = bartlett, lugsail_type = "Mother", replicate_size = 1000, num_replicates = 50000){
+generate_cv_uni <- function(b, alpha = 0.05, the_kernel = bartlett, lugsail_type = "Mother", q=1, return_F_stats = F, replicate_size = 1000, num_replicates = 50000){
 
-  new_b = b
-  null_mean = 0
   big_T = replicate_size
   # ------- Simulate all of the data  -------
   # [#,  ] each value for a single simulation, 1:big_T
@@ -174,18 +172,20 @@ generate_cv_uni <- function(b, alpha = 0.05, the_kernel = bartlett, lugsail_type
   # [ #,  ] a different b value
   # [  , #] a different simulation
 
-  F_stats <- get_kernel_F_stats(new_b, all_sim_data, the_means,
-                                   all_autocovariances, the_kernel, q = 1, lugsail_type)
-  test_stats <- F_stats
-
+  F_stats <- get_kernel_F_stats_uni(b, all_sim_data, the_means, all_autocovariances,
+                                    the_kernel, q = 1, lugsail_type)
   critical_values <- sapply(alpha, function(the_alpha) {
-    return(apply(test_stats, 2, quantile, probs = (1-the_alpha)))
+    return(apply(F_stats, 2, quantile, probs = (1-the_alpha)))
   })
-  critical_values <- matrix(c(critical_values), nrow = length(new_b), ncol = length(alpha))
-  rownames(critical_values) <- paste("b = ", new_b, sep = "")
+  critical_values <- matrix(c(critical_values), nrow = length(b), ncol = length(alpha))
+  rownames(critical_values) <- paste("b = ", b, sep = "")
   colnames(critical_values) <- paste("alpha = ", alpha, sep = "")
 
-  return(critical_values)
+  if(return_F_stats){
+    return(list(CV = critical_values, F_stats = F_stats))
+  } else{
+    return(critical_values)
+  }
 }
 
 
@@ -196,13 +196,13 @@ set.seed(62)
 
 CVs <- generate_cv_uni(b = c(0.005), alpha = c(0.05, 0.01),
                        the_kernel = bartlett,
-                       lugsail_type = "Mother",
+                       lugsail_type = "Mother", return_F_stats = T,
                        replicate_size = 1000,num_replicates = 10)
 CVs
 
 CVs <- generate_cv_uni(b = c(0.005,0.05), alpha = c(0.05, 0.01),
                        the_kernel = bartlett,
-                       lugsail_type = "Mother",
+                       lugsail_type = "Mother",return_F_stats = T,
                        replicate_size = 1000,num_replicates = 10)
 CVs
 

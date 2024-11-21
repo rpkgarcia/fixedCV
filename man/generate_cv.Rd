@@ -33,7 +33,7 @@ a function which generates the weights of the mother kernel.
   \item{lugsail_type}{
 a character vector of length 1, denotes the lugsail transformation of the mother kernel. Must be "Mother", "Zero", or "Over".
 }
-  \item{lugsail_type}{
+  \item{q}{
 a numeric vector of length 1, denotes the characteristic component the mother kernel.
 }
   \item{return_F_stats}{

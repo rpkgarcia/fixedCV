@@ -96,13 +96,13 @@ LRV_mother_estimator_uni <- function(new_b, all_sim_data, the_means,
 #     - a named list, list(r = 1, c= 0) that contains the lugsail parameters
 #     - default is non-lugsail
 
-F_stats_uni <- function(the_means, omega_hats,  big_T, null_mean = 0){
+F_stats_uni <- function(the_means, omega_hats,  big_T){
 
   # ------- F-statistics for various b values -------
   # [ #,  ] a different b value
   # [  , #] a different simulation
   omega_hat_inv <- 1/omega_hats
-  num <- (the_means- null_mean)
+  num <- (the_means- 0)
   F_stat <- apply(omega_hat_inv, 1, function(row) row*num^2*big_T)
   F_stat <- t(F_stat)
 

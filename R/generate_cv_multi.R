@@ -113,7 +113,8 @@ LRV_estimator <- function(new_b, all_autocovariances,
 #     - a named list, list(r = 1, c= 0) that contains the lugsail parameters
 #     - default is non-lugsail
 
-F_stats <- function(the_means, omega_hats, d = 1, big_T, null_means = rep(0, d)){
+F_stats <- function(the_means, omega_hats, d = 1, big_T){
+    null_means = rep(0, d)
 
     # Vector of F-statistics for each new_b value
     F_stat_by_b <- apply(omega_hats, 1, function(one_omega_hat){
@@ -130,17 +131,17 @@ F_stats <- function(the_means, omega_hats, d = 1, big_T, null_means = rep(0, d))
 
 
 get_kernel_F_stats <- function(new_b, the_means, d, all_autocovariances,
-                               the_kernel, lugsail, big_T, q = 1){
+                               the_kernel, lugsail_type, big_T, q = 1){
   # Need this for psd corrections.
   omega_mother <- LRV_mother_estimator(new_b, all_autocovariances, the_kernel)
 
   # Mother Kernel
-  if(lugsail == "Mother"){
+  if(lugsail_type == "Mother"){
     simulated_F_stats <- t(F_stats(the_means, omega_mother, d, big_T))
   }
 
   # Zero Lugsail
-  else if(lugsail == "Zero"){
+  else if(lugsail_type == "Zero"){
     lug_para <- get_lugsail_parameters(big_T, q = q, method = "Zero")
     omega_zero <- LRV_estimator(new_b, all_autocovariances,
                                 the_kernel = the_kernel,
@@ -150,7 +151,7 @@ get_kernel_F_stats <- function(new_b, the_means, d, all_autocovariances,
   }
 
   # Over Lugsail
-  else if (lugsail == "Over"){
+  else if (lugsail_type == "Over"){
     # Over Lugsail
     lug_para <- get_lugsail_parameters(big_T, q = q, method = "Over")
     omega_over <- LRV_estimator(new_b, all_autocovariances,
@@ -171,6 +172,7 @@ get_kernel_F_stats <- function(new_b, the_means, d, all_autocovariances,
 # Generates a null data set.  Calculates the autocovariance matrices.
 # Calculates the F-statistic
 # Need to repeat this simulation many times to then find what asymptotic CV is.
+
 
 simulate_f_stat <- function(big_T = 1000, d = 1, the_kernel = bartlett, q=1, lugsail_type = "Mother", new_b = b){
 
@@ -216,16 +218,6 @@ generate_cv_multi <- function(b, d = 2, alpha = 0.05,
   F_stats <- matrix(c(t(F_stats)), nrow = num_replicates, ncol = length(b))
   rownames(F_stats) <- paste("Sim", 1:num_replicates, sep = "")
   colnames(F_stats) <- paste("b = ", b, sep = "")
-
-  # if(length(b) == 1){
-  #   critical_values <- sapply(alpha, function(the_alpha) {
-  #     quantile(F_stats, probs = (1-the_alpha))
-  #   })
-  # } else{
-  #   critical_values <- sapply(alpha, function(the_alpha) {
-  #     apply(F_stats, 2, quantile, probs = (1-the_alpha))
-  #   })
-  # }
 
   critical_values <- sapply(alpha, function(the_alpha) {
     apply(F_stats, 2, quantile, probs = (1-the_alpha))

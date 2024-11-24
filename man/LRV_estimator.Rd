@@ -32,7 +32,7 @@ LRV_mother_estimator(new_b, all_autocovariances, the_kernel, d)
     a numeric vector with elements between 0 and 1, the desired bandwidth.
 }
   \item{all_autocovariances}{
-    a marix of the values for the estimated autocovariance.
+    a marix containing the values for the estimated autocovariance.
 }
   \item{the_kernel}{
   a function which generates the weights of the mother kernel.

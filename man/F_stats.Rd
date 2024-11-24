@@ -32,11 +32,8 @@ simulate_f_stat(big_T = 1000, d = 1, the_kernel = bartlett,
     a numeric vector with elements between 0 and 1, the desired bandwidth.
 }
   \item{all_autocovariances}{
-    a marix of the values for the estimated autocovariance.
+    a marix containing the values for the estimated autocovariance.
 }
-  \item{the_kernel}{
-  a function which generates the weights of the mother kernel.
-  }
   \item{d}{
 a numeric vector of length 1, denotes the number of dimensions.
 }
@@ -51,6 +48,9 @@ a vector of the means for the data set.
   }
   \item{omega_hats}{
   estimates for the LRV for each \code{new_b} value
+  }
+  \item{the_kernel}{
+  a function which generates the weights of the mother kernel.
   }
   \item{lugsail_type}{
 a character vector of length 1, denotes the lugsail transformation of the mother kernel. Must be "Mother", "Zero", or "Over".

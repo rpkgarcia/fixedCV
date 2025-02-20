@@ -2,13 +2,15 @@
 ## comparing rat of estimator corrections, MSE, bandwidth selection rules, and
 ## testing performance (Type I Error)
 here::i_am("R/univariate_sims.R")
+#proj_path <- here::here()
+#setwd("./R")
 library(Matrix)
 library(MASS)
 library(distr)
 
-source("kernels.R")
-source("lugsail.R")
-source("get_cv.R") #
+source("R/kernels.R")
+source("R/lugsail.R")
+#source("R/get_cv.R") #
 #source("get_b.R") # Has an error right now, Set b = 0.1 for now!
 #source("estimate_LRV.R")
 
@@ -164,7 +166,9 @@ print(gamma_h)
 ## Using correlated observation and errors (univariate response Y)
 
 # Generate data
-data_sine <- AR1_SINE(big_T = big_T, phi = 0.7, d = 4)
+phi = 0.9
+d = 4
+data_sine <- AR1_SINE(big_T = big_T, phi = phi, d = d)
 gamma_h <- autocovariance_multivariate(Y = as.matrix(data_sine$Y), h = 1)
 print(gamma_h)
 
@@ -205,7 +209,8 @@ print(sigma_covariance)
 
 # Plot data
 plot(data_sine$Y ~ c(1:big_T), type = "l",
-     main = "AR1_SINE Simulated Data, phi=0.7")
+     main = paste0("AR1_SINE Simulated Data, phi=", phi),
+     xlab = "Time", ylab = "Response Y")
 
 
 

@@ -16,7 +16,6 @@ mother_b_rule <- function(big_T, alpha, d, w_q, g_q, q = 1, tau = 0.1*alpha){
 # Zero lugsail bandwidth rule
 zero_b_rule <- function(rho, big_T, alpha = 0.05, d =1, tau = -alpha^(1/(2*d))/(big_T*log(rho))){
   cv <- qchisq((1-alpha), d)
-
   num <-  tau*(1+ rho)
   den <- dchisq(cv, d)*cv*2*rho^2
   opt_b <- log(num/den)/(big_T*log(rho))
@@ -36,47 +35,12 @@ over_b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = -alpha^(1/(2*
   type_1 <- alpha + distortion
   opt_b <- try_b[which(abs(distortion) <= tau)]
   opt_b <- min(opt_b)
-  return(opt_b)
-}
-
-# Get bandwidth
-# ... : for tau
-get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mother", ...){
-  browser()
-  big_T <- nrow(the_data)
-  d <- ncol(the_data)
-
-  # Kernel statistic information
-  q <- 1
-  if(the_kernel != "bartlett"){q <- 2}
-  if(q == 1){
-    w_q <- 2*rho/(1-rho^2)
-  } else {w_q <- 2*rho/(1-rho)^2 }
-  g_q <- g_q[[the_kernel]]
-
-  # Calculate the rho
-  # Average the AR(1) coefficient for all dimensions
-  all_rhos <- rep(0, d)
-  for(i in 1:d){
-    all_rhos[d] <- stats::acf(the_data[,d], plot = F)$acf[2]
-  }
-  rho <- mean(all_rhos)
-
-  # Decide if mother, zero, over
-  if(lugsail=="Mother"){
-    opt_b <- mother_b_rule(big_T, alpha, d, w_q, g_q, q, ...)
-
-  } else if (lugsail == "Zero"){
-    opt_b <- zero_b_rule(rho, big_T, alpha, d, ...)
-
-  } else if(lugsail == "Over"){
-    # g_q needs to be negative because this is over lugsail
-    opt_b <- over_b_rule(rho, big_T, alpha, d, w_q, g_q = -g_q, q, ...)
+  if(opt_b == Inf){
+    warning("No bandwidth meets criteria, it is recommended to increase tolerance level.")
+    opt_b <- 0
   }
   return(opt_b)
 }
-
-
 
 
 # Andrews rule (just as a reference, will delete later)
@@ -88,22 +52,9 @@ mse_rule <- function(big_T, rho = .7, q = 1, d = 1){
 }
 
 
-# optimal bandwidths as a function of sample size just to double check
-# Will delete this later
-mother_b_rule(200, 0.05, 1, w_q, 1)
-mse_rule(200)
-zero_b_rule(0.7, 200, alpha = 0.05, d =1)
-over_b_rule(0.9, 200,0.05, 1, w_q, -1)
+# Main ---------------------------------------------------------
 
-
-# another option ----------------------------------------------------------
-
-# Over bandwidth rule
-# the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mother",
-
-# rho, big_T, alpha, d, w_q, g_q, q=1, tau = -alpha^(.5*d)/(big_T*log(rho))
-
-get_b2.0 <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mother", tau = NA){
+get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mother", tau = NA){
 
   # dimensions
   big_T <- nrow(the_data)
@@ -119,9 +70,9 @@ get_b2.0 <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mo
 
   # tau, the neighborhood
   if(is.na(tau)){
-    tau <- -alpha^(1/(2*d))/(big_T*log(rho))
+    #tau <- -alpha^(1/(2*d))/(big_T*log(rho))
+    tau <- alpha*.1
   }
-  print(paste("Tau = ", tau))
 
   # kernel statistic information
   q <- 1
@@ -138,44 +89,38 @@ get_b2.0 <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mo
     g_q <- - g_q
   }
 
-  # what b's to search
-  try_b <- (1:(big_T/2))/big_T
-
-  # Type 1 error
-  cv <- qchisq((1-alpha), d)
-  distortion <- dchisq(cv, d)*cv*2*rho^2*rho^(try_b*big_T)/(1 + rho)+ (try_b*big_T)^(-q)*dchisq(cv, d)*cv*g_q*w_q
-  type_1 <- alpha + distortion
-  index_b <- which(abs(distortion) <= tau)
-  opt_b <- min(try_b[index_b])
-
-  plot(try_b, distortion)
-  abline(h = c(-tau, tau), col = "grey")
-  points(opt_b, distortion[try_b == opt_b], col = "grey", pch = 16, cex = 2)
+  if(lugsail != "Zero"){
+    if(tau < 0.1*alpha){
+      warning("Recommended tolerance level for mother setttings is 0.1*alpha or higher.")
+    }
+  }
 
   if(lugsail== "Zero"){
     zero_b <- zero_b_rule(rho, big_T, alpha = 0.05, d =d, tau = tau)
-    zero_b_index <- which.min(abs(try_b - zero_b))
-    points(zero_b, distortion[zero_b_index], pch = 8, col = "green", cex = 2)
-    return(c("Zero" = zero_b, "Opt" = opt_b))
+    return(zero_b)
   }
 
   if(lugsail == "Mother"){
-    # big_T, alpha, d, w_q, g_q, q = 1, tau = 0.1*alpha
-    mother_b <- mother_b_rule(big_T, alpha, d, w_q, g_q, q)
-    mother_b_index <- which.min(abs(try_b - mother_b))
-    points(mother_b, distortion[mother_b_index], pch = 8, col = "hotpink", cex = 2, lwd = 2)
-    return(c("Sun" = mother_b, "Opt" = opt_b))
+    mother_b <- mother_b_rule(big_T, alpha, d, w_q, g_q, q, tau = tau)
+    return(mother_b)
   }
 
-  return(opt_b)
+  if(lugsail == "Over"){
+    if(rho <0.9 | big_T <200){
+      warning("Over lugsail is not recommended for small data sets, or data sets with low correlation.")
+    }
+    over_b <- over_b_rule(rho, big_T, alpha = 0.05, d =d, w_q, g_q, tau = tau)
+    return(over_b)
+  }
 }
+
 
 
 set.seed(62)
 d <- 1
-big_T <- 1000
+big_T <- 2000
 rho_matrix <- matrix(0, nrow = d, ncol = d)
-diag(rho_matrix) <- 0.7
+diag(rho_matrix) <- 0.95
 sim_data <- matrix(0, nrow = big_T, ncol = d)
 sim_data[1, ] <- rnorm(d)
 for(i in 2:big_T){
@@ -183,19 +128,14 @@ for(i in 2:big_T){
 }
 
 
-get_b2.0(sim_data, lugsail="Zero", tau = .05*.15)
-get_b2.0(sim_data, lugsail = "Over", tau = .05*.15)
-get_b2.0(sim_data, tau = .05*.15)
-get_b2.0(sim_data)
+get_b(sim_data, lugsail="Zero", tau = .05*.15)
+get_b(sim_data, lugsail = "Over", tau = .05*.15)
+get_b(sim_data, tau = .05*.15)
 
 
 
-get_b2.0(sim_data, lugsail="Zero")
-get_b2.0(sim_data, lugsail = "Over")
-get_b2.0(sim_data)
+get_b(sim_data, lugsail="Zero")
+get_b(sim_data, lugsail = "Over")
+get_b(sim_data)
 
 
-mother_b_rule(200, 0.05, 1, w_q, 1)
-mse_rule(200)
-zero_b_rule(0.904, 200, alpha = 0.05, d =3)
-over_b_rule(0.9, 200,0.05, 1, w_q, -1)

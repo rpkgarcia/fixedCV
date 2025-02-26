@@ -3,30 +3,10 @@
 # over lugsail is the negative of mother
 g_q <- list("bartlett" = 1, "parzen" = 6, "th" = pi^2/4, "qs" = 1.421223)
 
-# Mother bandwidth rule
-mother_b_rule <- function(big_T, alpha, d, w_q, g_q, q = 1, tau = 0.1*alpha){
-  cv <- qchisq((1-alpha), d)
 
-  num <- dchisq(cv, d)*cv*g_q*w_q
-  den <- tau
-  opt_b <- (num/den)^(1/q)/big_T
-  return(opt_b)
-}
-
-# Zero lugsail bandwidth rule
-zero_b_rule <- function(rho, big_T, alpha = 0.05, d =1, tau = -alpha^(1/(2*d))/(big_T*log(rho))){
-  cv <- qchisq((1-alpha), d)
-  num <-  tau*(1+ rho)
-  den <- dchisq(cv, d)*cv*2*rho^2
-  opt_b <- log(num/den)/(big_T*log(rho))
-  opt_b <- max(0, opt_b)
-  if(is.na(opt_b)){opt_b <- 0 }
-
-  return(opt_b)
-}
 
 # Over bandwidth rule
-over_b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = -alpha^(1/(2*d))/(big_T*log(rho))){
+b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
   try_b <- (1:(big_T/2))/big_T
   cv <- qchisq((1-alpha), d)
 
@@ -44,18 +24,18 @@ over_b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = -alpha^(1/(2*
 
 
 # Andrews rule (just as a reference, will delete later)
-mse_rule <- function(big_T, rho = .7, q = 1, d = 1){
-  w_1 <- (2*rho/(1-rho^2))
-  the_b  <- 1.1447*(w_1/big_T)^(2/3)
-  if(is.na(the_b)){the_b <- 0}
-  return(the_b)
-}
+# mse_rule <- function(big_T, rho = .7, q = 1, d = 1){
+#   w_1 <- (2*rho/(1-rho^2))
+#   the_b  <- 1.1447*(w_1/big_T)^(2/3)
+#   if(is.na(the_b)){the_b <- 0}
+#   return(the_b)
+# }
 
 
 # Main ---------------------------------------------------------
 
-get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mother", tau = NA){
-
+get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mother", tau = alpha*.15){
+  the_data <- as.matrix(the_data)
   # dimensions
   big_T <- nrow(the_data)
   d <- ncol(the_data)
@@ -69,10 +49,7 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mothe
   rho <- mean(all_rhos)
 
   # tau, the neighborhood
-  if(is.na(tau)){
-    #tau <- -alpha^(1/(2*d))/(big_T*log(rho))
-    tau <- alpha*.1
-  }
+  #tau <- -alpha^(1/(2*d))/(big_T*log(rho))
 
   # kernel statistic information
   q <- 1
@@ -89,53 +66,21 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mothe
     g_q <- - g_q
   }
 
-  if(lugsail != "Zero"){
+  if(lugsail == "Mother"){
     if(tau < 0.1*alpha){
       warning("Recommended tolerance level for mother setttings is 0.1*alpha or higher.")
     }
-  }
-
-  if(lugsail== "Zero"){
-    zero_b <- zero_b_rule(rho, big_T, alpha = 0.05, d =d, tau = tau)
-    return(zero_b)
-  }
-
-  if(lugsail == "Mother"){
-    mother_b <- mother_b_rule(big_T, alpha, d, w_q, g_q, q, tau = tau)
-    return(mother_b)
   }
 
   if(lugsail == "Over"){
     if(rho <0.9 | big_T <200){
       warning("Over lugsail is not recommended for small data sets, or data sets with low correlation.")
     }
-    over_b <- over_b_rule(rho, big_T, alpha = 0.05, d =d, w_q, g_q, tau = tau)
-    return(over_b)
   }
+
+  b_opt <- b_rule(rho, big_T, alpha = 0.05, d =d, w_q, g_q, tau = tau)
+  return(b_opt)
 }
 
-
-
-set.seed(62)
-d <- 1
-big_T <- 2000
-rho_matrix <- matrix(0, nrow = d, ncol = d)
-diag(rho_matrix) <- 0.95
-sim_data <- matrix(0, nrow = big_T, ncol = d)
-sim_data[1, ] <- rnorm(d)
-for(i in 2:big_T){
-  sim_data[i,] <- sim_data[i-1, ]%*%rho_matrix + rnorm(d)
-}
-
-
-get_b(sim_data, lugsail="Zero", tau = .05*.15)
-get_b(sim_data, lugsail = "Over", tau = .05*.15)
-get_b(sim_data, tau = .05*.15)
-
-
-
-get_b(sim_data, lugsail="Zero")
-get_b(sim_data, lugsail = "Over")
-get_b(sim_data)
 
 

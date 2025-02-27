@@ -23,14 +23,6 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
 }
 
 
-# Andrews rule (just as a reference, will delete later)
-# mse_rule <- function(big_T, rho = .7, q = 1, d = 1){
-#   w_1 <- (2*rho/(1-rho^2))
-#   the_b  <- 1.1447*(w_1/big_T)^(2/3)
-#   if(is.na(the_b)){the_b <- 0}
-#   return(the_b)
-# }
-
 
 # Main ---------------------------------------------------------
 
@@ -47,9 +39,6 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mothe
     all_rhos[i] <- stats::acf(the_data[,i], plot = F)$acf[2]
   }
   rho <- mean(all_rhos)
-
-  # tau, the neighborhood
-  #tau <- -alpha^(1/(2*d))/(big_T*log(rho))
 
   # kernel statistic information
   q <- 1

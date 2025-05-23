@@ -7,11 +7,12 @@ g_q <- list("bartlett" = 1, "parzen" = 6, "th" = pi^2/4, "qs" = 1.421223)
 
 # Over bandwidth rule
 b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
-  try_b <- (1:(big_T/2))/big_T
+  try_b <- (0:(big_T))/big_T
   cv <- qchisq((1-alpha), d)
 
   # Type 1 error
-  distortion <- dchisq(cv, d)*cv*2*rho^2*rho^(try_b*big_T)/(1 + rho)+ (try_b*big_T)^(-q)*dchisq(cv, d)*cv*g_q*w_q
+  distortion <- dchisq(cv, d)*cv*2*rho^2*rho^(try_b*big_T)/(1 + rho)+
+    (try_b*big_T)^(-q)*dchisq(cv, d)*cv*g_q*w_q
   type_1 <- alpha + distortion
   opt_b <- try_b[which(abs(distortion) <= tau)]
   opt_b <- min(opt_b)
@@ -19,6 +20,9 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
     warning("No bandwidth meets criteria, it is recommended to increase tolerance level.")
     opt_b <- 0
   }
+  plot(try_b, abs(distortion), xlab = "Bandwidth (b)")
+  abline(v= opt_b, col = "red", lwd = 2)
+  legend("topright", col = "red", lwd = 2, legend = "Optimal", cex  =.5)
   return(opt_b)
 }
 
@@ -26,7 +30,8 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
 
 # Main ---------------------------------------------------------
 
-get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mother", tau = alpha*.15){
+# tau = alpha * .15
+get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother", tau = alpha*.15){
   the_data <- as.matrix(the_data)
   # dimensions
   big_T <- nrow(the_data)
@@ -39,6 +44,7 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mothe
     all_rhos[i] <- stats::acf(the_data[,i], plot = F)$acf[2]
   }
   rho <- mean(all_rhos)
+  #tau <- -1/ (big_T * log(rho)) # delete later
 
   # kernel statistic information
   q <- 1
@@ -46,9 +52,10 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mothe
   if(q == 1){
     w_q <- 2*rho/(1-rho^2)
   } else {w_q <- 2*rho/(1-rho)^2 }
-  g_q <- g_q[[the_kernel]]
+
 
   # g_q based on lugsail type
+  g_q <- g_q[[the_kernel]]
   if(lugsail == "Zero"){
     g_q <- 0
   } else if (lugsail == "Over"){
@@ -67,7 +74,9 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mothe
     }
   }
 
+  #tau <- -.25/(big_T*log(rho)) # delete this line
   b_opt <- b_rule(rho, big_T, alpha = 0.05, d =d, w_q, g_q, tau = tau)
+
   return(b_opt)
 }
 

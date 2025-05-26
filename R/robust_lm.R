@@ -23,7 +23,7 @@ library(Matrix)
 
 # Multivariate
 set.seed(62)
-d <- 3
+d <- 5
 big_T <- 200
 model_rho <- 0.7
 rho_matrix <- matrix(0, nrow = d, ncol = d)
@@ -42,7 +42,7 @@ for(i in 2:big_T){
 
 y <- apply(sim_data, 1, sum) + disturbance
 the_data <- data.frame(y, sim_data)
-colnames(the_data) <- c("y", "x1", "x2", "x3")
+colnames(the_data) <- c("y", paste("x", 1:d, sep = ""))
 
 fit <- lm(y ~. , the_data)
 
@@ -90,6 +90,7 @@ p_values <- function(test_stat, the_b = 0, the_d= 1,  the_kernel = "Bartlett",
 robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                       method = "simulated", tau = 0.05*.15){
 
+
   # ------- Basic statistics needed from the LM object -------
   kernel_fct <- bartlett
   if(the_kernel == "QS"){
@@ -126,11 +127,6 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                    lugsail=lugsail, tau = tau) # only consider the correlation levels for coef you want
     omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                            big_T, d = length(coefs))
-
-
-
-    # Check if computationally PD
-    #omega  <- as.matrix(nearPD(omega)$mat)
     beta_cov <- (solve(M)%*%omega%*%solve(M))
 
     # Standard error (se)
@@ -168,10 +164,10 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                  lugsail = lugsail, tau = tau)
   omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                          big_T, d = length(coefs))
-  omega  <- as.matrix(nearPD(omega)$mat) # Check if computationally PD
+  omega  <- as.matrix(omega) # Check if computationally PD
   beta_cov <- (solve(M)%*%omega%*%solve(M))[-1, -1]
   F_stat <- big_T * coefs[-1] %*% solve(beta_cov) %*% coefs[-1]/(length(coefs)-1)
-  keep <- p_values(F_stat, the_b = f_test_b, the_d =c(length(coefs)-1),
+  keep <- p_values(F_stat, the_b = the_b, the_d =c(length(coefs)-1),
                    the_kernel = the_kernel,
                    lugsail = lugsail, method = method)
   F_stat <- data.frame(F_stat, keep$p_value)
@@ -195,86 +191,18 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 
 robust_lm(fit)
 robust_lm(fit, lugsail = "Zero")
+robust_lm(fit, the_kernel = "QS")
 robust_lm(fit, the_kernel = "QS", lugsail = "Zero")
 robust_lm(fit, the_kernel = "QS", tau = alpha*.5)
 
-robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", tau = alpha*.5,
-          method = "analytical")
 
-robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", tau = alpha*.5,
-         method = "simulated")
+robust_lm(fit, the_kernel = "QS")
+robust_lm(fit, the_kernel = "QS", method = "analytical")
 
-
+robust_lm(fit, tau = -sqrt(alpha)/ (big_T * log(rho)))
 
 
-# Non-time series raw calculation  ----------------------------------------
+robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", method = "analytical")
 
-summary(fit)$coefficients[,2]
-sqrt(diag(solve(M*big_T)*sum(residuals^2))/big_T)
-
-sqrt(diag(solve(M) %*% (t(errors) %*% errors) %*% solve(M))/(big_T-2)/big_T)
-
-
-sqrt(diag(summary(fit)$cov.unscaled))
-
-
-t <- summary(fit)
-
-# These match, the estimated variance of residuals
-t$sigma
-sqrt(sum(t$residuals^2)/(big_T-4))
-
-# These match, its the X^tX matrix
-M2 <- t(X)%*%X
-diag(t$cov.unscaled)
-diag(solve(M2))
-
-
-# Var-Cov of LM model
-diag(t$cov.unscaled)*t$sigma^2
-diag(vcov(t))
-diag(solve(M2))*sum(t$residuals^2)/(big_T-4)
-
-# SE of the Betas using standard methods
-summary(fit)$coefficients[,2]
-sqrt(diag(solve(M2))*sum(t$residuals^2)/(big_T-4))
-sqrt(solve(M2)*sum(t$residuals^2)/(big_T-4))
-
-
-# Var-Cov
-diag(solve(M2))*sum(t$residuals^2)
-solve(M2)*sum(t$residuals^2)
-diag((solve(M*big_T)%*%omega%*%solve(M*big_T))*big_T/(big_T-4))
-
-
-# F test statistics
-t$fstatistic
-vcov(t)
-solve(M2)*sum(t$residuals^2)/(big_T-4)
-
-big_T * t$coefficients[-1,1] %*%solve(solve(M2)[-1,-1]*sum(t$residuals^2)) %*% t$coefficients[-1,1]/3
-
-
-# THIS IS THE MATCH
-t$fstatistic
-coefs[-1] %*% solve(vcov(t)[-1, -1]) %*% coefs[-1]/3
-
-# Reference code (delete me) ----------------------------------------------
-
-F_stats <- function(big_T, the_means, omega_hats, d, the_Ms, null_means = rep(0, d)){
-
-  # [#]: try_b values
-  F_stat_by_b <- apply(omega_hats, 1, function(one_omega_hat){
-    omega_mother <- as.matrix(nearPD( omega_mother)$mat)
-    one_omega_hat <- (solve(the_Ms)%*%one_omega_hat%*%solve(the_Ms))[2,2] # second coef only
-    inv_one_omega <- 1/one_omega_hat
-    num <- (the_means- null_means)[2]
-    F_stat = (num*inv_one_omega*num)*big_T
-    return(F_stat)
-  })
-
-}
-
-
-
+robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", method = "simulated")
 

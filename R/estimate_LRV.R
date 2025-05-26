@@ -1,4 +1,4 @@
-
+library(Matrix)
 
 # For mother kernels
 LRV_mother_estimator <- function(b, all_autocovariances, the_kernel,
@@ -19,7 +19,7 @@ LRV_mother_estimator <- function(b, all_autocovariances, the_kernel,
 
   # LRV estimate
   omega_hats <- W %*% all_autocovariances
-  omega_hats <- matrix(omega_hats, nrow = d)
+  omega_hats <- matrix(omega_hats, nrow = sqrt(d))
   return(omega_hats)
 }
 
@@ -32,7 +32,6 @@ LRV_lugsail_estimator <- function(b, all_autocovariances,
                           the_kernel, lugsail_parameters = list(r = 1, c= 0),
                           mother_omega, big_T= nrow(all_autocovariances),
                           d = ncol(all_autocovariances)){
-  big_T <- nrow(all_autocovariances)
 
   # Make the weights that correspond to the autocovariances
   M <- b*big_T
@@ -73,7 +72,7 @@ LRV_estimator <- function(b, all_autocovariances,
 
   # Start with making the mother estimator
   omega_mother <- LRV_mother_estimator(b, all_autocovariances, kernel_fct,
-                                       big_T = big_T, d= length(coefs))
+                                       big_T = big_T, d= ncol(all_autocovariances))
   # Mother Kernel
   if(lugsail_type == "Mother"){
     omega <- omega_mother
@@ -97,5 +96,6 @@ LRV_estimator <- function(b, all_autocovariances,
                                    lugsail_parameters = lug_para,
                                    mother_omega= omega_mother, d=d)
   }
+  omega <- nearPD(omega)$mat # Check if computationally PD
   return(omega)
 }

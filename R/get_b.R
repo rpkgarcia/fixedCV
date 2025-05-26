@@ -6,8 +6,9 @@ g_q <- list("bartlett" = 1, "parzen" = 6, "th" = pi^2/4, "qs" = 1.421223)
 
 
 # Over bandwidth rule
-b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
-  try_b <- (0:(big_T))/big_T
+b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15, auto_adjust = T){
+
+  try_b <- (0:(big_T)/2)/big_T
   cv <- qchisq((1-alpha), d)
 
   # Type 1 error
@@ -15,12 +16,31 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
     (try_b*big_T)^(-q)*dchisq(cv, d)*cv*g_q*w_q
   type_1 <- alpha + distortion
   opt_b <- try_b[which(abs(distortion) <= tau)]
-  opt_b <- min(opt_b)
-  if(opt_b == Inf){
-    warning("No bandwidth meets criteria, it is recommended to increase tolerance level.")
-    opt_b <- 0
+
+  if(length(opt_b) == 0 & auto_adjust){
+    # If we don't find a suitable b and auto adjust is allowed,
+    # then increase tolerance (tau) until we meet the optimal b.
+    tau_new <- tau
+    for(i in 1:1000){ # control how many times tau can increase
+      tau_new  <- tau_new*1.25
+      opt_b <- try_b[which(abs(distortion) <= tau_new)]
+      if(length(opt_b) >0) {
+        opt_b <- min(opt_b)
+        break
+      }
+    }
+    warning(paste("No bandwidth met the criteria using the tolerance level ",
+                  round(tau, 4), ". Tolerance was increased to ", round(tau_new, 4),
+                  " using the auto adjust feature.", sep = ""))
+  } else if(length(opt_b) == 0 & auto_adjust == F){
+  warning(paste("No bandwidth met the criteria using the tolerance level. It is recommended to increase the tolerance level or use the auto
+                adjust feature to automatically compensate.", sep = ""))
+    b_opt = 0
+  } else{
+    opt_b <- min(opt_b)
   }
-  plot(try_b, abs(distortion), xlab = "Bandwidth (b)")
+  plot(try_b, abs(distortion), xlab = "Bandwidth (b)",
+       ylab = "Abs. Distortion")
   abline(v= opt_b, col = "red", lwd = 2)
   legend("topright", col = "red", lwd = 2, legend = "Optimal", cex  =.5)
   return(opt_b)
@@ -31,7 +51,8 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15){
 # Main ---------------------------------------------------------
 
 # tau = alpha * .15
-get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother", tau = alpha*.15){
+get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother", tau = alpha*.15,
+                  auto_adjust = T){
   the_data <- as.matrix(the_data)
   # dimensions
   big_T <- nrow(the_data)
@@ -44,7 +65,7 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
     all_rhos[i] <- stats::acf(the_data[,i], plot = F)$acf[2]
   }
   rho <- mean(all_rhos)
-  #tau <- -1/ (big_T * log(rho)) # delete later
+ # tau <- -1/ (big_T * log(rho)) # delete later
 
   # kernel statistic information
   q <- 1
@@ -75,7 +96,7 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
   }
 
   #tau <- -.25/(big_T*log(rho)) # delete this line
-  b_opt <- b_rule(rho, big_T, alpha = 0.05, d =d, w_q, g_q, tau = tau)
+  b_opt <- b_rule(rho, big_T, alpha = 0.05, d =d, w_q, g_q, tau = tau, auto_adjust = auto_adjust)
 
   return(b_opt)
 }

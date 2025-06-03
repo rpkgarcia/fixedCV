@@ -192,6 +192,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 robust_lm(fit)
 robust_lm(fit, lugsail = "Zero")
 robust_lm(fit, the_kernel = "QS")
+robust_lm(fit, the_kernel = "QS", tau = 0.0117 )
 robust_lm(fit, the_kernel = "QS", lugsail = "Zero")
 robust_lm(fit, the_kernel = "QS", tau = alpha*.5)
 

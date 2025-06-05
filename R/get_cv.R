@@ -1,4 +1,4 @@
-setwd("~/Documents/GitHub/fixedCV")
+#setwd("~/Documents/GitHub/fixedCV")
 
 # Analytical CV -----------------------------------------------------------
 

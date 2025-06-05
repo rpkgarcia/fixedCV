@@ -71,7 +71,7 @@ LRV_estimator <- function(b, all_autocovariances,
                           d = ncol(all_autocovariances)){
 
   # Start with making the mother estimator
-  omega_mother <- LRV_mother_estimator(b, all_autocovariances, kernel_fct,
+  omega_mother <- LRV_mother_estimator(b, all_autocovariances, the_kernel,
                                        big_T = big_T, d= ncol(all_autocovariances))
   # Mother Kernel
   if(lugsail_type == "Mother"){

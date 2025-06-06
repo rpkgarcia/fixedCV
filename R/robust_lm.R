@@ -153,7 +153,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   rownames(summary) <- names(coefs)
   colnames(summary) <- c("Estimate", "Std. Error", "t value","b", "P(>|t|)")
 
-  all_rhos <- rep(NA, 4)
+  all_rhos <- rep(NA, 1)
   for(i in 1:ncol(errors)){
     all_rhos[i] <- stats::acf(errors[,i], plot = F)$acf[2]
   }

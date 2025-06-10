@@ -93,12 +93,16 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 
   # ------- Basic statistics needed from the LM object -------
   kernel_fct <- bartlett
+  q <- 1
   if(the_kernel == "QS"){
     kernel_fct <- qs
+    q <- 2
   } else if(the_kernel == "TH"){
     kernel_fct <- th
+    q <- 2
   } else if(the_kernel == "Parzen"){
     kernel_fct <- parzen
+    q <- 2
   }
 
   # ------- Basic statistics needed from the LM object -------

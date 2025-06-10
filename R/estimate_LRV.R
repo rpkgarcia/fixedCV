@@ -68,7 +68,23 @@ LRV_lugsail_estimator <- function(b, all_autocovariances,
 LRV_estimator <- function(b, all_autocovariances,
                           the_kernel, lugsail_type,
                           big_T= nrow(all_autocovariances),
-                          d = ncol(all_autocovariances)){
+                          d = ncol(all_autocovariances),
+                          q = NA){
+
+  # The value for q
+  if(identical(bartlett, the_kernel)){
+    q <- 1
+  } else if(identical(qs, the_kernel)){
+    q <- 2
+  } else if(identical(th, the_kernel)){
+    q <- 2
+  } else if(identical(parzen, the_kernel)){
+    q <- 2
+  } else if(is.na(q)& lugsail_type != "Mother"){
+    warning("Custom kernel function and non-mother kernel selected, but no value for q is supplied.
+            Please supply either the q value or select a different kernel.")
+  }
+  print(paste("q =", q))
 
   # Start with making the mother estimator
   omega_mother <- LRV_mother_estimator(b, all_autocovariances, the_kernel,

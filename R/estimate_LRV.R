@@ -84,7 +84,7 @@ LRV_estimator <- function(b, all_autocovariances,
     warning("Custom kernel function and non-mother kernel selected, but no value for q is supplied.
             Please supply either the q value or select a different kernel.")
   }
-  print(paste("q =", q))
+  #print(paste("q =", q))
 
   # Start with making the mother estimator
   omega_mother <- LRV_mother_estimator(b, all_autocovariances, the_kernel,

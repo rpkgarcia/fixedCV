@@ -155,7 +155,6 @@ nsim <- 1000    # Number of simulations for Type errors
 alpha <- 0.05   # Significance level
 big_T <- 200   # Time Series length
 d = 1           # X dimension (univariate Y for now)
-#d = 2 # DOESN"T LIKE one-dimension?? nor 2
 
 # Varying across:
 # Autocorrelation parameter
@@ -163,7 +162,6 @@ rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95, 0.96, 0.97, 0.98, 0.99)
 rho_index = 0
 
 # Other parameter(s)
-
 type1_all <- rep(NA, length(rho_vec))
 b_mean_vec <- rep(NA, length(rho_vec))
 
@@ -185,8 +183,8 @@ lugsail = "Mother"
 # lugsail = "Over"
 
 # Method
-method = "simulated"
-# method = "analytical"
+#method = "simulated"
+method = "analytical"
 
 # tau parameter, use default for now
 # tau = 0.05*.15
@@ -201,10 +199,11 @@ for(rho in rho_vec){
 
   for(i in 1:nsim){
     # Simulate data
-    # Simplify this later with functions
-    data_homo <- AR1_AR_u(big_T = big_T, rho = rho, d = d, theta = rep(0,d))
-    y <- data_homo$Y
-    x <- data_homo$X
+    # Simplify this further later
+    data <- AR1_AR_u(big_T = big_T, rho = rho, d = d, theta = rep(0,d))
+    # data <- AR1_SINE(big_T = big_T, rho = rho, d = d, theta = rep(0,d))
+    y <- data$Y
+    x <- data$X
     big_T <- nrow(x)
 
     # Put in data frame object

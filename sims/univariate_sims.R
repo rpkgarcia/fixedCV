@@ -172,7 +172,7 @@ the_kernel <- bartlett
 # the_kernel <- th
 
 # Parzen, Bartlett, QS, TH - string for printing
-the_kernel_string <- 'Bartlett'
+the_kernel_string <- 'Bartlett' #main focus
 # the_kernel_string <- 'Parzen'
 # the_kernel_string <- 'QS'
 # the_kernel_string <- 'TH'
@@ -183,8 +183,8 @@ lugsail = "Mother"
 # lugsail = "Over"
 
 # Method
-#method = "simulated"
-method = "analytical"
+method = "simulated"
+#method = "analytical"
 
 # tau parameter, use default for now
 # tau = 0.05*.15
@@ -217,7 +217,8 @@ for(rho in rho_vec){
                       method = method) # can add tau
 
     # Record type1_errors
-    type1_error <- fitr$F_test$`P-Value`
+    #type1_error <- fitr$F_test$`P-Value`
+    type1_error <- fitr$Summary_Table$`P(>|t|)`[2]
     type1_vec[i] <- type1_error
 
     # (optional) Friendly print update
@@ -225,10 +226,10 @@ for(rho in rho_vec){
   }
 
   # unique P values:   "<0.01*" "<0.025." "<0.05." "<0.10" ">=0.10"
-  numeric_p_value <- ifelse(type1_vec %in% c("<0.01*", "<0.025.", "<0.05."), 0, 1)
+  numeric_p_value <- ifelse(type1_vec %in% c("<0.01*", "<0.025.", "<0.05."), 1, 0)
   type1_all[rho_index] <- mean(numeric_p_value)
 
-  ### Need to save b values, which ones?
+  ### Need to save b values, which ones? F-test?
 }
 
 beep("fanfare")

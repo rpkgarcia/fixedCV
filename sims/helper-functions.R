@@ -86,6 +86,23 @@ AR1_SINE <- function(big_T, rho, d, theta = rep(0, d)){
   return(list(Y = c(Y), X = X))
 }
 
+HET_u <- function(big_T, rho, a_0 = 5, a_1 = .25){
+  u <- rep(0, big_T)
+  v <- AR_u(big_T, rho)
+
+  for(i in 2:big_T){
+    u[i] <- sqrt(a_0 + a_1*u[(i-1)])*v[i]
+  }
+  return(u)
+}
+
+AR1_HET <- function(big_T, rho, d, theta = rep(0, 4)){
+  X <- AR_X(big_T, rho, d)
+  u <- HET_u(big_T, rho)
+  Y <- X%*%theta + u
+  return(list(Y = c(Y), X = X))
+}
+
 # Example dataset
 # data_homo <- AR1_AR_u(big_T = big_T, rho = rho, d = d, theta = rep(0,d))
 # y <- data_homo$Y

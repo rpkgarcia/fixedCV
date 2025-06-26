@@ -1,3 +1,7 @@
+#library(beep)
+library(Matrix)
+library(MASS)
+library(distr)
 source("R/estimate_LRV.R")
 source("R/get_b.R")
 source("R/get_cv.R")
@@ -172,7 +176,7 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
 
     ### Need to save b values, which ones? F-test?
   }
-  beep("complete")
+  #beep("complete")
 
   results_df <- data.frame(
     autocorrelation = rho_vec,

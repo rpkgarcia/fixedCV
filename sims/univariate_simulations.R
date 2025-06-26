@@ -42,8 +42,14 @@ d = 1           # X dimension (univariate Y for now)
 
 sim1 <- simulate_t1error_rate_single_rho(nsim = 1000, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
 sim2 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1235, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
+sim_ar1_het_1 <-
+  simulate_t1error_rate_single_rho(nsim = 1000, data_generation_fcn = AR1_HET, big_T = big_T, d = d, theta = rep(0,d))
 
 d = 2
 sim3 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1236, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
 sim4 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1237, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
+sim_ar1_het_2 <-
+  simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1235, data_generation_fcn = AR1_HET, big_T = big_T, d = d, theta = rep(0,d))
 
+# Save example
+# write.csv(x = sim_ar1_het_1, file = "./sims/d=1/ar1_het.csv")

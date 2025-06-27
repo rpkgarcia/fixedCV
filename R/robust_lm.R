@@ -164,7 +164,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   summary$b <- NULL # delete the b column from the summary table
 
   # ------- F-test -------
-  the_b <- get_b(errors, the_kernel = tolower(the_kernel),
+  the_b <- get_b(errors[,-1], the_kernel = tolower(the_kernel),
                  lugsail = lugsail, tau = tau)
   omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                          big_T, d = length(coefs))
@@ -179,7 +179,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 
   # ------- CV-Table -------
   cv_table <- rbind(cv_table, keep$cv_table)
-  cv_table <- data.frame(rho = c(all_rhos, mean(all_rhos)),
+  cv_table <- data.frame(rho = c(all_rhos, mean(all_rhos[-1])),
                                  cv_table)
   rownames(cv_table) <- c(names(coefs), "F-test")
   colnames(cv_table) <- c("rho","b", "dim", ".10", ".05", ".025", ".01")

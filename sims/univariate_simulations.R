@@ -15,6 +15,12 @@ d = 1           # X dimension (univariate Y for now)
 # big_T <- nrow(x)
 #
 # plot(y~c(1:big_T), type = "l")
+#
+# the_data <- data.frame(y, x)
+# colnames(the_data) <- c("y", paste("x", 1:d, sep = "")) # rename cols
+# fit <- lm(y~., data = the_data)
+# fitr <- robust_lm(fit = fit)
+
 
 sim1 <- simulate_t1error_rate_single_rho(nsim = 1000, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
 sim2 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1235, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))

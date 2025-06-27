@@ -16,30 +16,6 @@ d = 1           # X dimension (univariate Y for now)
 #
 # plot(y~c(1:big_T), type = "l")
 
-# Select kernel(s)
-# the_kernel <- bartlett
-# the_kernel <- parzen
-# the_kernel <- qs
-# the_kernel <- th
-
-# Parzen, Bartlett, QS, TH - string for printing
-# the_kernel_string <- 'Bartlett' #main focus
-# the_kernel_string <- 'Parzen'
-# the_kernel_string <- 'QS'
-# the_kernel_string <- 'TH'
-
-# Lugsail setting
-# lugsail = "Mother"
-# lugsail = "Zero"
-# lugsail = "Over"
-
-# Method
-# method = "simulated"
-#method = "analytical"
-
-# tau parameter, use default for now
-# tau = 0.05*.15
-
 sim1 <- simulate_t1error_rate_single_rho(nsim = 1000, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
 sim2 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1235, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
 sim_ar1_het_1 <-
@@ -50,6 +26,12 @@ sim3 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1236, data_ge
 sim4 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1237, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
 sim_ar1_het_2 <-
   simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 1235, data_generation_fcn = AR1_HET, big_T = big_T, d = d, theta = rep(0,d))
+
+d = 3
+sim1 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 31, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
+sim2 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 32, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
+sim_ar1_het <-
+  simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 33, data_generation_fcn = AR1_HET, big_T = big_T, d = d, theta = rep(0,d))
 
 # Save example
 # write.csv(x = sim_ar1_het_1, file = "./sims/d=1/ar1_het.csv")

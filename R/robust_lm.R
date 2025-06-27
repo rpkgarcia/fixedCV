@@ -170,7 +170,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                          big_T, d = length(coefs))
   omega  <- as.matrix(omega) # Check if computationally PD
   beta_cov <- (solve(M)%*%omega%*%solve(M))[-1, -1]
-  F_stat <- big_T * coefs[-1] %*% solve(beta_cov) %*% coefs[-1]/(length(coefs)-1)
+  F_stat <- big_T * coefs[-1] %*% solve(beta_cov) %*% coefs[-1]#/(length(coefs)-1)
   keep <- p_values(F_stat, the_b = the_b, the_d =c(length(coefs)-1),
                    the_kernel = the_kernel,
                    lugsail = lugsail, method = method)

@@ -3,7 +3,7 @@ source("sims/helper-functions.R")
 
 seed.value = 1234
 set.seed(seed.value)
-nsim <- 100    # Number of simulations for Type errors
+nsim <- 1000    # Number of simulations for Type errors
 alpha <- 0.05   # Significance level
 big_T <- 200   # Time Series length
 d = 1           # X dimension (univariate Y for now)

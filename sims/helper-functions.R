@@ -116,13 +116,44 @@ AR1_HET <- function(big_T, rho, d, theta = rep(0, 4)){
 # plot(y~c(1:big_T), type = "l")
 
 
+#### SETTINGS ####
+# Select kernel(s)
+# the_kernel <- bartlett
+# the_kernel <- parzen
+# the_kernel <- qs
+# the_kernel <- th
+
+# Parzen, Bartlett, QS, TH - string for printing
+# the_kernel_string <- 'Bartlett' #main focus
+# the_kernel_string <- 'Parzen'
+# the_kernel_string <- 'QS'
+# the_kernel_string <- 'TH'
+
+# Lugsail setting
+# lugsail = "Mother"
+# lugsail = "Zero"
+# lugsail = "Over"
+
+# Method
+# method = "simulated"
+# method = "analytical"
+
+# tau parameter, use default for now
+# tau = 0.05*.15
+
+
 #' Function to run type 1 error rate simulations for a set of rho's, [nsim] many
 #' generations of data from [data_generation_fcn].
 #'
 #' @param rho_vec numeric vector, of autocorrelation parameters
 #' @param nsim numeric scalar, of number of simulations to run using [data_generation_fcn]
-#' @param data_generation_fcn function, user provided data generation function with appropriate parameters, needs to return X and Y
-#' @return Returns a list of response Y  and X
+#' @param seed.value numeric, value for [set.seed] initialization
+#' @param the_kernel character, the kernel to be used. One of "Bartlett", "Parzen", "QS", or "TH"
+#' @param lugsail character, the lugsail setting. One of "Mother", "Zero", or "Over"
+#' @param method character, the method used to calculate critical values. One of "simulated" or "analytical"
+#' @param data_generation_fcn function, user provided data generation function with appropriate parameters through [...], needs to return X and Y
+#'
+#' @return Returns a data frame with autocorrelation (rho) columns and corresponding Type 1 error rate
 simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 0.9, 0.95, 0.96, 0.97, 0.98, 0.99),
                                       nsim = 1000,
                                       seed.value = 1234,

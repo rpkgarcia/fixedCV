@@ -193,8 +193,8 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
                         method = method) # can add tau
 
       # Record type1_errors
-      #type1_error <- fitr$F_test$`P-Value`
-      type1_error <- fitr$Summary_Table$`P(>|t|)`[2]
+      type1_error <- fitr$F_test$`P-Value`
+      #type1_error <- fitr$Summary_Table$`P(>|t|)`[2]
       type1_vec[i] <- type1_error
 
       # (optional) Friendly print update

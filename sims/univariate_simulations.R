@@ -1,5 +1,6 @@
 # Univariate simulations
 source("sims/helper-functions.R")
+library(beepr)
 
 seed.value = 1234
 set.seed(seed.value)
@@ -52,7 +53,3 @@ write.csv(x = sim1, file = "./sims/d=3/ar1_ar_u.csv")
 write.csv(x = sim2, file = "./sims/d=3/ar1_sine.csv")
 write.csv(x = sim_ar1_het, file = "./sims/d=3/ar1_het.csv")
 beep("complete")
-
-beep("complete")
-# Save example
-# write.csv(x = sim_ar1_het_1, file = "./sims/d=1/ar1_het.csv")

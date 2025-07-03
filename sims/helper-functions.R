@@ -164,6 +164,8 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
                                       ...){
   set.seed(seed.value)
   type1_all <- rep(NA, length(rho_vec))
+  b_all <- rep(NA, length(rho_vec))
+  b_var <- rep(NA, length(rho_vec))
   rho_index = 0
 
   for(rho in rho_vec){
@@ -193,9 +195,15 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
                         method = method) # can add tau
 
       # Record type1_errors
-      type1_error <- fitr$F_test$`P-Value`
-      #type1_error <- fitr$Summary_Table$`P(>|t|)`[2]
-      type1_vec[i] <- type1_error
+
+      if(d==1){
+        type1_vec[i] <- fitr$Summary_Table$`P(>|t|)`[2]
+      } else{
+        type1_vec[i] <- fitr$F_test$`P-Value`
+      }
+
+      # Record b's
+      b_vec[i] <- tail(fitr$CV_table$b, n=1)
 
       # (optional) Friendly print update
       if(i %% 100 == 0){cat("nsim = ", i, ", rho = ", rho, "\n", sep = "")}
@@ -204,6 +212,8 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
     # unique P values:   "<0.01*" "<0.025." "<0.05." "<0.10" ">=0.10"
     numeric_p_value <- ifelse(type1_vec %in% c("<0.01*", "<0.025.", "<0.05."), 1, 0)
     type1_all[rho_index] <- mean(numeric_p_value)
+    b_all[rho_index] <- mean(b_vec)
+    b_var[rho_index] <- var(b_vec)
 
     ### Need to save b values, which ones? F-test?
   }
@@ -211,7 +221,9 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
 
   results_df <- data.frame(
     autocorrelation = rho_vec,
-    type1_error = type1_all
+    type1_error = type1_all,
+    b_all = b_all,
+    b_var = b_var
   )
 
   print(results_df)

@@ -95,7 +95,7 @@ LRV_estimator <- function(b, all_autocovariances,
   }
 
   # Zero Lugsail
-  else if(lugsail_type == "Zero"){
+  else if(lugsail_type == "Zero" || lugsail_type == "zero"){
     lug_para <- get_lugsail_parameters(big_T, q = q, method = "Zero")
     omega <- LRV_lugsail_estimator(b, all_autocovariances,
                                 the_kernel = the_kernel,

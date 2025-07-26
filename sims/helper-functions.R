@@ -253,7 +253,7 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
       if(i %% 100 == 0){cat("nsim = ", i,
                             ", rho = ", rho,
                             ", kernel:", the_kernel,
-                            ", setting: ," , method ,"\n", sep = "")}
+                            ", setting: " , method ,"\n", sep = "")}
     }
 
     # unique P values:   "<0.01*" "<0.025." "<0.05." "<0.10" ">=0.10"

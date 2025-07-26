@@ -22,34 +22,35 @@ d = 1           # X dimension (univariate Y for now)
 # fit <- lm(y~., data = the_data)
 # fitr <- robust_lm(fit = fit)
 
+seed.value = 1 # 1234
+set.seed(seed.value)
+nsim <- 1000    # Number of simulations for Type errors
+alpha <- 0.05   # Significance level
+d = 1           # X dimension (univariate Y for now)
 
-sim1 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 123, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
-sim2 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 124, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
-sim_ar1_het <-
-  simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 125, data_generation_fcn = AR1_HET, big_T = big_T, d = d, theta = rep(0,d))
+for(size in c(200, 500, 1000)){ # 500, 1000
+  seed.value = 1+size
+  set.seed(seed.value)
+  big_T <- size # !!
+  the_kernel <- "Bartlett"
+  lugsail_type <- "Zero"
+  method <- "simulated" # Needs to be lowercase
+  sim <- simulate_t1error_rate_single_rho(nsim = 1000,
+                                          rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 0.9),
+                                          seed.value = 123,
+                                          data_generation_fcn = AR1_HET, # AR1_AR_u
+                                          the_kernel = the_kernel,
+                                          lugsail = lugsail_type,
+                                          method = method,
+                                          big_T = big_T,
+                                          d = d,
+                                          theta = rep(0,d))
+  file_path <- paste0("./sims/d=", d,
+                      "/", tolower(the_kernel),
+                      "/", tolower(lugsail_type),
+                      "/n=", size,
+                      "/ar1_sine.csv") # ar1_ar_u.csv
+  #print(file_path)
+  write.csv(x = sim, file = file_path)
+}
 
-write.csv(x = sim1, file = "./sims/d=1/ar1_ar_u.csv")
-write.csv(x = sim2, file = "./sims/d=1/ar1_sine.csv")
-write.csv(x = sim_ar1_het, file = "./sims/d=1/ar1_het.csv")
-beep("complete")
-
-d = 2
-sim1 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 126, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
-sim2 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 127, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
-sim_ar1_het <-
-  simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 128, data_generation_fcn = AR1_HET, big_T = big_T, d = d, theta = rep(0,d))
-
-write.csv(x = sim1, file = "./sims/d=2/ar1_ar_u.csv")
-write.csv(x = sim2, file = "./sims/d=2/ar1_sine.csv")
-write.csv(x = sim_ar1_het, file = "./sims/d=2/ar1_het.csv")
-beep("complete")
-
-d = 3
-sim1 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 129, data_generation_fcn = AR1_AR_u, big_T = big_T, d = d, theta = rep(0,d))
-sim2 <- simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 130, data_generation_fcn = AR1_SINE, big_T = big_T, d = d, theta = rep(0,d))
-sim_ar1_het <-
-  simulate_t1error_rate_single_rho(nsim = 1000, seed.value = 131, data_generation_fcn = AR1_HET, big_T = big_T, d = d, theta = rep(0,d))
-write.csv(x = sim1, file = "./sims/d=3/ar1_ar_u.csv")
-write.csv(x = sim2, file = "./sims/d=3/ar1_sine.csv")
-write.csv(x = sim_ar1_het, file = "./sims/d=3/ar1_het.csv")
-beep("complete")

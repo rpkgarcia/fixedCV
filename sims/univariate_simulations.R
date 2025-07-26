@@ -37,7 +37,6 @@ for(size in c(200, 500, 1000)){ # 500, 1000
   method <- "simulated" # Needs to be lowercase
   sim <- simulate_t1error_rate_single_rho(nsim = 1000,
                                           rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 0.9),
-                                          seed.value = 123,
                                           data_generation_fcn = AR1_HET, # AR1_AR_u
                                           the_kernel = the_kernel,
                                           lugsail = lugsail_type,
@@ -49,8 +48,12 @@ for(size in c(200, 500, 1000)){ # 500, 1000
                       "/", tolower(the_kernel),
                       "/", tolower(lugsail_type),
                       "/n=", size,
-                      "/ar1_sine.csv") # ar1_ar_u.csv
+                      "/", method,
+                      "/ar1_het.csv") # ar1_ar_u.csv
   #print(file_path)
   write.csv(x = sim, file = file_path)
 }
 
+# AR(4) process
+#set.seed(123)
+#errors <- ARp_u(big_T = 100, rho_vec = c(0.6, -0.3, 0.2, 0.1))

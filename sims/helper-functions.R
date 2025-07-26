@@ -20,7 +20,7 @@ source("R/robust_lm.R")
 #' @param d numeric, Dimension and number of columns of X of the time series to create
 #' @return Return a matrix X that has dimension big_T by d
 AR_X <- function(big_T, rho, d){
-  # Make a random normal draw
+  # Make a random normal draw instead of 0
   X <- matrix(0, nrow = big_T, ncol = d)
 
   for(i in 2:big_T){
@@ -42,6 +42,41 @@ AR_u <- function(big_T, rho){
   }
   return(u)
 }
+
+#' AR(4) correlated error/noise generation with autocorrelation parameters [rho_vec]
+#'
+#' @param big_T numeric, Length of time series
+#' @param rho_vec numeric vector of length 4, Autocorrelation coefficients for lags 1 to 4
+#' @return Returns a numeric vector of length big_T
+AR4_u <- function(big_T, rho_vec){
+  if(length(rho_vec) != 4){
+    stop("rho_vec must be a numeric vector of length 4")
+  }
+
+  u <- rep(0, big_T)
+  for(i in 5:big_T){
+    u[i] <- sum(rho_vec * u[(i-1):(i-4)]) + rnorm(1)
+  }
+  return(u)
+}
+
+
+#' AR(p) correlated error/noise generation with autocorrelation parameters [rho_vec]
+#'
+#' @param big_T numeric, Length of time series
+#' @param rho_vec numeric vector of length p, Autocorrelation coefficients for lags 1 to p
+#' @return Returns a numeric vector of length big_T
+ARp_u <- function(big_T, rho_vec){
+  p <- length(rho_vec)
+  u <- rep(0, big_T)
+
+  for(i in (p + 1):big_T){
+    u[i] <- sum(rho_vec * u[(i - 1):(i - p)]) + rnorm(1)
+  }
+
+  return(u)
+}
+
 
 #' Generate Sinusoidal error/noise vector (not AR)
 #'
@@ -71,6 +106,14 @@ AR1_AR_u <- function(big_T, rho, d, theta = rep(0, d)){
   u <- AR_u(big_T, rho)
   Y <- X%*%theta + u
   return(list(Y = c(Y), X = X))
+}
+
+AR1_ARp_u <- function(big_T, rho, d, p, theta = rep(0, d)){
+  X <- AR_X(big_T, rho, d)
+  rho_p <- rep(rho, p)
+  u = ARp_u(big_T, rho_vec = rho_p)
+  Y <- X%*%theta + u
+  return(list(Y = c(Y), X=X))
 }
 
 
@@ -189,8 +232,9 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
       colnames(the_data) <- c("y", paste("x", 1:d, sep = "")) # rename cols
 
       fit <- lm(y ~ ., data = the_data)
+      #print(lugsail)
       fitr <- robust_lm(fit = fit,
-                        the_kernel = tolower(the_kernel),
+                        the_kernel = the_kernel,
                         lugsail = lugsail,
                         method = method) # can add tau
 
@@ -206,7 +250,10 @@ simulate_t1error_rate_single_rho <- function(rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 
       b_vec[i] <- tail(fitr$CV_table$b, n=1)
 
       # (optional) Friendly print update
-      if(i %% 100 == 0){cat("nsim = ", i, ", rho = ", rho, "\n", sep = "")}
+      if(i %% 100 == 0){cat("nsim = ", i,
+                            ", rho = ", rho,
+                            ", kernel:", the_kernel,
+                            ", setting: ," , method ,"\n", sep = "")}
     }
 
     # unique P values:   "<0.01*" "<0.025." "<0.05." "<0.10" ">=0.10"

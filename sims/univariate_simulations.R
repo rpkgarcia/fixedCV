@@ -33,11 +33,11 @@ for(size in c(200, 500, 1000)){ # 500, 1000
   set.seed(seed.value)
   big_T <- size # !!
   the_kernel <- "Bartlett"
-  lugsail_type <- "Zero"
-  method <- "simulated" # Needs to be lowercase
+  lugsail_type <- "Mother"
+  method <- "analytical" # Needs to be lowercase
   sim <- simulate_t1error_rate_single_rho(nsim = 1000,
                                           rho_vec = c(0, 0.3, 0.5, 0.7, 0.8, 0.9),
-                                          data_generation_fcn = AR1_HET, # AR1_AR_u
+                                          data_generation_fcn = AR1_AR_u, # AR1_AR_u
                                           the_kernel = the_kernel,
                                           lugsail = lugsail_type,
                                           method = method,
@@ -47,9 +47,9 @@ for(size in c(200, 500, 1000)){ # 500, 1000
   file_path <- paste0("./sims/d=", d,
                       "/", tolower(the_kernel),
                       "/", tolower(lugsail_type),
-                      "/n=", size,
                       "/", method,
-                      "/ar1_het.csv") # ar1_ar_u.csv
+                      "/n=", size,
+                      "/ar1_ar_u.csv") # ar1_ar_u.csv, ar1_het.csv, ar1_sine.csv
   #print(file_path)
   write.csv(x = sim, file = file_path)
 }

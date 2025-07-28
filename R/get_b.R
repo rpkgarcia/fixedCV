@@ -39,10 +39,10 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15, auto_a
   } else{
     opt_b <- min(opt_b)
   }
-  plot(try_b, abs(distortion), xlab = "Bandwidth (b)",
-       ylab = "Abs. Distortion")
-  abline(v= opt_b, col = "red", lwd = 2)
-  legend("topright", col = "red", lwd = 2, legend = "Optimal", cex  =.5)
+  # plot(try_b, abs(distortion), xlab = "Bandwidth (b)",
+  #      ylab = "Abs. Distortion")
+  # abline(v= opt_b, col = "red", lwd = 2)
+  # legend("topright", col = "red", lwd = 2, legend = "Optimal", cex  =.5)
   return(opt_b)
 }
 

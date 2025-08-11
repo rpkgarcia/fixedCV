@@ -209,5 +209,5 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 #
 # robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", method = "analytical")
 #
-# robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", method = "simulated")
+#robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", method = "fitted")
 

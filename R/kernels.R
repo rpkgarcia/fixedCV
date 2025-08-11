@@ -39,7 +39,7 @@ parzen <- function(x){
 th <- function(x){
   k_x <- 0
   if(abs(x)<=1){
-    k_x <- 0.5*(1 - cos(pi*x))
+    k_x <- 0.5*(1 + cos(pi*x))
   }
   return(k_x)
 }

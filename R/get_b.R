@@ -54,8 +54,8 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15, auto_a
 get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother", tau = alpha*.15,
                   auto_adjust = T){
 
-  the_data <- as.matrix(the_data)
   # dimensions
+  the_data <- as.matrix(the_data)
   big_T <- nrow(the_data)
   d <- ncol(the_data)
 

@@ -55,8 +55,9 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
                   auto_adjust = T){
 
   # dimensions
-  the_data2 <- as.matrix(the_data)
-  the_data <- the_data2
+  if(!("matrix" %in% class(the_data))){
+    the_data <- as.matrix(the_data)
+  }
   big_T <- nrow(the_data)
   d <- ncol(the_data)
 

@@ -68,9 +68,9 @@ get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
   alpha <- paste(0, alpha*100, sep = "")
   if(alpha == "010") alpha <- "10"
   if(alpha == "02.5") alpha <- "025"
-  file <- paste(the_kernel, lugsail, alpha, "Master.csv", sep = "_")
-  file <- paste("data/", file, sep = "")
-  the_table <- read.csv(file)
+  file <- paste(the_kernel, lugsail, alpha, "Master.rds", sep = "_")
+  #file <- paste("data/", file, sep = "")
+  the_table <- readRDS(file)
 
   # Pick correct CV for each b
   cv_by_b <- sapply(new_b, function(check_b){
@@ -89,7 +89,8 @@ get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
 
 get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
   # Read in all fitted values for the fitted CV method
-  the_fits <- read.csv("data/fitted_CV.csv")
+  #the_fits <- read.csv("data/fitted_CV.csv")
+  the_fits <- readRDS("fitted_CV.rds")
   chisq_cv <-  qchisq(1-alpha, df = d)/d
 
   # Pull out only the values you need

@@ -131,8 +131,8 @@ get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
 
 
 # Test Cases --------------------------------------------------------------
-
-get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "simulated")
-get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "analytical")
-get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "fitted")
+#
+# get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "simulated")
+# get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "analytical")
+# get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "fitted")
 

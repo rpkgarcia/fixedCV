@@ -1,9 +1,9 @@
 
 
 # Load Functions ----------------------------------------------------------
-source("kernels.R")
-source("lugsail.R")
-source("R.R")
+#source("kernels.R")
+#source("lugsail.R")
+#source("R.R")
 library(Matrix)
 
 
@@ -192,19 +192,19 @@ generate_cv_uni <- function(b, alpha = 0.05, the_kernel = bartlett, lugsail_type
 
 # Examples ----------------------------------------------------------------
 
-set.seed(62)
-
-CVs <- generate_cv_uni(b = c(0.005), alpha = c(0.05, 0.01),
-                       the_kernel = bartlett,
-                       lugsail_type = "Mother", return_F_stats = T,
-                       replicate_size = 1000,num_replicates = 10)
-CVs
-
-CVs <- generate_cv_uni(b = c(0.005,0.05), alpha = c(0.05, 0.01),
-                       the_kernel = bartlett,
-                       lugsail_type = "Mother",return_F_stats = T,
-                       replicate_size = 1000,num_replicates = 10)
-CVs
+# set.seed(62)
+#
+# CVs <- generate_cv_uni(b = c(0.005), alpha = c(0.05, 0.01),
+#                        the_kernel = bartlett,
+#                        lugsail_type = "Mother", return_F_stats = T,
+#                        replicate_size = 1000,num_replicates = 10)
+# CVs
+#
+# CVs <- generate_cv_uni(b = c(0.005,0.05), alpha = c(0.05, 0.01),
+#                        the_kernel = bartlett,
+#                        lugsail_type = "Mother",return_F_stats = T,
+#                        replicate_size = 1000,num_replicates = 10)
+# CVs
 
 
 

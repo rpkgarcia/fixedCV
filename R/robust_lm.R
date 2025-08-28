@@ -20,35 +20,35 @@ library(Matrix)
 
 # simulate an example data set --------------------------------------------
 
-
-# Multivariate
-set.seed(62)
-d <- 5
-big_T <- 200
-model_rho <- 0.7
-rho_matrix <- matrix(0, nrow = d, ncol = d)
-diag(rho_matrix) <- model_rho
-sim_data <- matrix(0, nrow = big_T, ncol = d)
-sim_data[1, ] <- rnorm(d)
-the_sd <- 1/4
-for(i in 2:big_T){
-  sim_data[i,] <- sim_data[i-1, ]%*%rho_matrix + rnorm(d, sd = the_sd)
-}
-
-disturbance <- rnorm(1)
-for(i in 2:big_T){
-  disturbance[i] <- disturbance[i-1]*model_rho + rnorm(1, sd = the_sd)
-}
-
-y <- apply(sim_data, 1, sum) + disturbance
-the_data <- data.frame(y, sim_data)
-colnames(the_data) <- c("y", paste("x", 1:d, sep = ""))
-
-fit <- lm(y ~. , the_data)
-
-
-
-
+#
+# # Multivariate
+# set.seed(62)
+# d <- 5
+# big_T <- 200
+# model_rho <- 0.7
+# rho_matrix <- matrix(0, nrow = d, ncol = d)
+# diag(rho_matrix) <- model_rho
+# sim_data <- matrix(0, nrow = big_T, ncol = d)
+# sim_data[1, ] <- rnorm(d)
+# the_sd <- 1/4
+# for(i in 2:big_T){
+#   sim_data[i,] <- sim_data[i-1, ]%*%rho_matrix + rnorm(d, sd = the_sd)
+# }
+#
+# disturbance <- rnorm(1)
+# for(i in 2:big_T){
+#   disturbance[i] <- disturbance[i-1]*model_rho + rnorm(1, sd = the_sd)
+# }
+#
+# y <- apply(sim_data, 1, sum) + disturbance
+# the_data <- data.frame(y, sim_data)
+# colnames(the_data) <- c("y", paste("x", 1:d, sep = ""))
+#
+# fit <- lm(y ~. , the_data)
+#
+#
+#
+#
 
 # support functions -------------------------------------------------------
 p_values <- function(test_stat, the_b = 0, the_d= 1,  the_kernel = "Bartlett",

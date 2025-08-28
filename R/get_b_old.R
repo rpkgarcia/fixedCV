@@ -100,19 +100,19 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="bartlett", lugsail="Mothe
 
 
 
-set.seed(62)
-d <- 1
-big_T <- 200
-rho_matrix <- matrix(0, nrow = d, ncol = d)
-diag(rho_matrix) <- 0.7
-sim_data <- matrix(0, nrow = big_T, ncol = d)
-sim_data[1, ] <- rnorm(d)
-for(i in 2:big_T){
-  sim_data[i,] <- sim_data[i-1, ]%*%rho_matrix + rnorm(d)
-}
-
-
-get_b(sim_data)
-
+# set.seed(62)
+# d <- 1
+# big_T <- 200
+# rho_matrix <- matrix(0, nrow = d, ncol = d)
+# diag(rho_matrix) <- 0.7
+# sim_data <- matrix(0, nrow = big_T, ncol = d)
+# sim_data[1, ] <- rnorm(d)
+# for(i in 2:big_T){
+#   sim_data[i,] <- sim_data[i-1, ]%*%rho_matrix + rnorm(d)
+# }
+#
+#
+# get_b(sim_data)
+#
 
 

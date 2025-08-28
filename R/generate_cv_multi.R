@@ -1,10 +1,10 @@
 # It can also be cleaned/sped up more overall.
 
 # Load Functions ----------------------------------------------------------
-source("kernels.R")
-source("lugsail.R")
-source("R.R")
-library(Matrix)
+# source("kernels.R")
+# source("lugsail.R")
+# source("R.R")
+# library(Matrix)
 
 # LRV Estimator -----------------------------------------------------------
 
@@ -236,17 +236,21 @@ generate_cv_multi <- function(b, d = 2, alpha = 0.05,
 }
 
 
-# Example
-set.seed(26)
-generate_cv_multi(b = c(0.1, 0.05), d = 2, the_kernel = bartlett,
-                  return_F_stats = T, num_replicates = 10)
+# -------------------------------------------------------------------------
 
 
 
-generate_cv_multi(b = c(0.1), d = 2, alpha = c(0.05, 0.01),
-                  the_kernel = bartlett, return_F_stats = T, num_replicates = 10)
-
-
+# # Example
+# set.seed(26)
+# generate_cv_multi(b = c(0.1, 0.05), d = 2, the_kernel = bartlett,
+#                   return_F_stats = T, num_replicates = 10)
+#
+#
+#
+# generate_cv_multi(b = c(0.1), d = 2, alpha = c(0.05, 0.01),
+#                   the_kernel = bartlett, return_F_stats = T, num_replicates = 10)
+#
+#
 
 
 

@@ -61,7 +61,6 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
 
   # calculate the rho
   # average the AR(1) coefficient for all dimensions
-  print(d)
   all_rhos <- rep(0, d)
   for(i in 1:d){
     all_rhos[i] <- stats::acf(the_data[,i], plot = F)$acf[2]

@@ -6,10 +6,11 @@ Author: Rebecca Kurtz-Garcia
 Maintainer: Rebecca Kurtz-Garcia  <rkurtzgarcia@smith.edu>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 3.5)
 Imports: 
-    Matrix
+    Matrix,
+    rpkgarcia/fixedCV

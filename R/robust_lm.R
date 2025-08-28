@@ -111,8 +111,8 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   residuals <- fit$residuals
   errors <- apply(X, 2, function(col) col*residuals) # not normal errors, moment conditions
   errors <- errors - apply(errors, 2, mean) # center immediately
-  M <- t(X)%*%X/big_T
   big_T <- nrow(fit$model)
+  M <- t(X)%*%X/big_T
 
   # ------- AutoCovariance Matrices  -------
   # [#, ] the lag (0, ..., big_T-1)

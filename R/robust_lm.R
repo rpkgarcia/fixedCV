@@ -51,7 +51,7 @@ library(Matrix)
 #
 
 # support functions -------------------------------------------------------
-p_values <- function(test_stat, the_b = 0, the_d= 1,  the_kernel = "Bartlett",
+p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
                      lugsail = "Mother", method = "simulated"){
 
   # Get the appropriate CVs
@@ -61,7 +61,7 @@ p_values <- function(test_stat, the_b = 0, the_d= 1,  the_kernel = "Bartlett",
   CV_10  <- get_cv(the_b, the_d, .10, the_kernel, lugsail, method)*the_d
 
   # Use t-statistic if d==1
-  if(d == 1){
+  if(the_d == 1){
     CV_01 <- sqrt(CV_01)
     CV_025 <- sqrt(CV_025)
     CV_05 <- sqrt(CV_05)
@@ -89,7 +89,6 @@ p_values <- function(test_stat, the_b = 0, the_d= 1,  the_kernel = "Bartlett",
 
 robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                       method = "simulated", tau = 0.05*.15){
-
 
   # ------- Basic statistics needed from the LM object -------
   kernel_fct <- bartlett
@@ -148,7 +147,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   coefs_p_values <- rep(NA, length(coefs))
   for(i in 1:length(coefs)){
     keep <- p_values(summary[i, 3], the_b = summary[i, 4],
-                     the_d= 1,  the_kernel = the_kernel,
+                     the_d = 1,  the_kernel = the_kernel,
                      lugsail = lugsail, method = method)
     coefs_p_values[i] <- keep$p_value
     cv_table[i, ] <- keep$cv_table

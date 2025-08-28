@@ -10,7 +10,7 @@
 
 
 # For mother kernels
-LRV_mother_estimator <- function(new_b, all_autocovariances, the_kernel, d){
+LRV_mother_estimator_multi <- function(new_b, all_autocovariances, the_kernel, d){
   big_T <- nrow(all_autocovariances)
 
   # Make the wieghts that correspond to the autocovariances
@@ -40,7 +40,7 @@ LRV_mother_estimator <- function(new_b, all_autocovariances, the_kernel, d){
 # For Lugsail Kernels
 # Corrects the non-positive diagonal elements.
 
-LRV_estimator <- function(new_b, all_autocovariances,
+LRV_estimator_multi <- function(new_b, all_autocovariances,
                           the_kernel, lugsail_parameters = list(r = 1, c= 0),
                           mother_omega, d){
   big_T <- nrow(all_autocovariances)
@@ -133,7 +133,7 @@ F_stats <- function(the_means, omega_hats, d = 1, big_T){
 get_kernel_F_stats <- function(new_b, the_means, d, all_autocovariances,
                                the_kernel, lugsail_type, big_T, q = 1){
   # Need this for psd corrections.
-  omega_mother <- LRV_mother_estimator(new_b, all_autocovariances, the_kernel)
+  omega_mother <- LRV_mother_estimator_multi(new_b, all_autocovariances, the_kernel)
 
   # Mother Kernel
   if(lugsail_type == "Mother"){
@@ -143,7 +143,7 @@ get_kernel_F_stats <- function(new_b, the_means, d, all_autocovariances,
   # Zero Lugsail
   else if(lugsail_type == "Zero"){
     lug_para <- get_lugsail_parameters(big_T, q = q, method = "Zero")
-    omega_zero <- LRV_estimator(new_b, all_autocovariances,
+    omega_zero <- LRV_estimator_multi(new_b, all_autocovariances,
                                 the_kernel = the_kernel,
                                 lugsail_parameters = lug_para,
                                 mother_omega= omega_mother, d=d)
@@ -154,7 +154,7 @@ get_kernel_F_stats <- function(new_b, the_means, d, all_autocovariances,
   else if (lugsail_type == "Over"){
     # Over Lugsail
     lug_para <- get_lugsail_parameters(big_T, q = q, method = "Over")
-    omega_over <- LRV_estimator(new_b, all_autocovariances,
+    omega_over <- LRV_estimator_multi(new_b, all_autocovariances,
                                 the_kernel= the_kernel,
                                 lugsail_parameters = lug_para,
                                 mother_omega = omega_mother, d=d)

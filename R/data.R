@@ -1,16 +1,21 @@
-#' World Health Organization TB data
+#' Prices of 50,000 round cut diamonds
 #'
-#' A subset of data from the World Health Organization Global Tuberculosis
-#' Report ...
+#' A dataset containing the prices and other attributes of almost 54,000
+#'  diamonds. The variables are as follows:
 #'
-#' @format ## `fitted_CV`
-#' A data frame with 7,240 rows and 60 columns:
-#' \describe{
-#'   \item{country}{Country name}
-#'   \item{iso2, iso3}{2 & 3 letter ISO country codes}
-#'   \item{year}{Year}
-#'   ...
+#' @format A data frame with 53940 rows and 10 variables:
+#' \itemize{
+#'   \item price: price in US dollars (\$326--\$18,823)
+#'   \item carat: weight of the diamond (0.2--5.01)
+#'   \item cut: quality of the cut (Fair, Good, Very Good, Premium, Ideal)
+#'   \item color: diamond colour, from J (worst) to D (best)
+#'   \item clarity: a measurement of how clear the diamond is
+#'      (I1 (worst), SI1, SI2, VS1, VS2, VVS1, VVS2, IF (best))
+#'   \item x: length in mm (0--10.74)
+#'   \item y: width in mm (0--58.9)
+#'   \item z: depth in mm (0--31.8)
+#'   \item depth: total depth percentage = z / mean(x, y) = 2 * z / (x + y) (43--79)
+#'   \item table: width of top of diamond relative to widest point (43--95)
 #' }
-#' @source <https://www.who.int/teams/global-tuberculosis-programme/data>
 "fitted_CV"
 

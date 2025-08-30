@@ -90,7 +90,8 @@ get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
 get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
   # Read in all fitted values for the fitted CV method
   #the_fits <- read.csv("data/fitted_CV.csv")
-  the_fits <- readRDS("fitted_CV.rds")
+  #the_fits <- readRDS("fitted_CV.rds")
+  the_fits <- fitted_CV #eval(parse(text= hi))
   chisq_cv <-  qchisq(1-alpha, df = d)/d
 
   # Pull out only the values you need

@@ -7,21 +7,12 @@
 \alias{Bartlett_Mother_025_Master}
 \alias{Bartlett_Mother_05_Master}
 \alias{Bartlett_Mother_10_Master}
-\title{Prices of 50,000 round cut diamonds}
+\title{Fixed Critical Values using the Simulated Method}
 \format{
-A data frame with 53940 rows and 10 variables:
+A look up table containing the simulated robust critical values. The 'b' column contains the bandwidth, and subsequent columns are the dimensions
 \itemize{
-  \item price: price in US dollars (\$326--\$18,823)
-  \item carat: weight of the diamond (0.2--5.01)
-  \item cut: quality of the cut (Fair, Good, Very Good, Premium, Ideal)
-  \item color: diamond colour, from J (worst) to D (best)
-  \item clarity: a measurement of how clear the diamond is
-     (I1 (worst), SI1, SI2, VS1, VS2, VVS1, VVS2, IF (best))
-  \item x: length in mm (0--10.74)
-  \item y: width in mm (0--58.9)
-  \item z: depth in mm (0--31.8)
-  \item depth: total depth percentage = z / mean(x, y) = 2 * z / (x + y) (43--79)
-  \item table: width of top of diamond relative to widest point (43--95)
+  \item b: bandwidth of the test statistics. The proportion of autocovariances given a non-zero weight.
+  \item d: the dimension of the test statistic.
 }
 
 An object of class \code{data.frame} with 199 rows and 13 columns.
@@ -40,7 +31,10 @@ Bartlett_Mother_05_Master
 Bartlett_Mother_10_Master
 }
 \description{
-A dataset containing the prices and other attributes of almost 54,000
- diamonds. The variables are as follows:
+The title of each data set is the \code{<Mother>_<Lugsail>_<alpha>_Master}.
+}
+\details{
+The title of each data set is the \code{<Mother>_<Lugsail>_<alpha>_Master}. Supported mother kernels are Bartlett, Parzen, Tukey-Hanning (TH), and Quadratic Spectral (QS). Supported lugsail settings are mother, zero, and over. The available critical values are 0.01, 0.025, 0.05, and 0.10.
+Note that when b = 0 the robust critical value are equivalent to chi-square critical values.
 }
 \keyword{datasets}

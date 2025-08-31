@@ -6,7 +6,6 @@
 \alias{Bartlett_Mother_01_Master}
 \alias{Bartlett_Mother_025_Master}
 \alias{Bartlett_Mother_05_Master}
-\alias{Bartlett_Mother_10_Master}
 \title{Fixed Critical Values using the Simulated Method}
 \format{
 A look up table containing the simulated robust critical values. The 'b' column contains the bandwidth, and subsequent columns are the dimensions
@@ -18,17 +17,13 @@ A look up table containing the simulated robust critical values. The 'b' column 
 An object of class \code{data.frame} with 199 rows and 13 columns.
 
 An object of class \code{data.frame} with 199 rows and 13 columns.
-
-An object of class \code{data.frame} with 199 rows and 13 columns.
 }
 \usage{
-Bartlett_Mother_01_Master
+data(Bartlett_Mother_10_Master)
 
 Bartlett_Mother_025_Master
 
 Bartlett_Mother_05_Master
-
-Bartlett_Mother_10_Master
 }
 \description{
 The title of each data set is the \code{<Mother>_<Lugsail>_<alpha>_Master}.

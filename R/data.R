@@ -18,4 +18,5 @@
 #'   \item table: width of top of diamond relative to widest point (43--95)
 #' }
 "Bartlett_Mother_05_Master"
-
+"Bartlett_Mother_10_Master"
+"Bartlett_Mother_01_Master"

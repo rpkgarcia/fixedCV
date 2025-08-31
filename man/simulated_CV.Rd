@@ -6,6 +6,23 @@
 \alias{Bartlett_Mother_01_Master}
 \alias{Bartlett_Mother_025_Master}
 \alias{Bartlett_Mother_05_Master}
+\alias{Bartlett_Mother_10_Master}
+\alias{Bartlett_Zero_01_Master}
+\alias{Bartlett_Zero_025_Master}
+\alias{Bartlett_Zero_05_Master}
+\alias{Bartlett_Zero_10_Master}
+\alias{Bartlett_Over_01_Master}
+\alias{Bartlett_Over_025_Master}
+\alias{Bartlett_Over_05_Master}
+\alias{Bartlett_Over_10_Master}
+\alias{QS_Mother_01_Master}
+\alias{QS_Mother_025_Master}
+\alias{QS_Mother_05_Master}
+\alias{QS_Mother_10_Master}
+\alias{QS_Zero_01_Master}
+\alias{QS_Zero_025_Master}
+\alias{QS_Zero_05_Master}
+\alias{QS_Zero_10_Master}
 \title{Fixed Critical Values using the Simulated Method}
 \format{
 A look up table containing the simulated robust critical values. The 'b' column contains the bandwidth, and subsequent columns are the dimensions
@@ -13,17 +30,47 @@ A look up table containing the simulated robust critical values. The 'b' column 
   \item b: bandwidth of the test statistics. The proportion of autocovariances given a non-zero weight.
   \item d: the dimension of the test statistic.
 }
-
-An object of class \code{data.frame} with 199 rows and 13 columns.
-
-An object of class \code{data.frame} with 199 rows and 13 columns.
 }
 \usage{
-data(Bartlett_Mother_10_Master)
+Bartlett_Mother_01_Master
 
 Bartlett_Mother_025_Master
 
 Bartlett_Mother_05_Master
+
+Bartlett_Mother_10_Master
+
+Bartlett_Zero_01_Master
+
+Bartlett_Zero_025_Master
+
+Bartlett_Zero_05_Master
+
+Bartlett_Zero_10_Master
+
+Bartlett_Over_01_Master
+
+Bartlett_Over_025_Master
+
+Bartlett_Over_05_Master
+
+Bartlett_Over_10_Master
+
+QS_Mother_01_Master
+
+QS_Mother_025_Master
+
+QS_Mother_05_Master
+
+QS_Mother_10_Master
+
+QS_Zero_01_Master
+
+QS_Zero_025_Master
+
+QS_Zero_05_Master
+
+QS_Zero_10_Master
 }
 \description{
 The title of each data set is the \code{<Mother>_<Lugsail>_<alpha>_Master}.

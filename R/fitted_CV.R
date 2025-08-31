@@ -17,5 +17,5 @@
 #'   \item depth: total depth percentage = z / mean(x, y) = 2 * z / (x + y) (43--79)
 #'   \item table: width of top of diamond relative to widest point (43--95)
 #' }
-"Bartlett_Mother_05_Master"
+"fitted_CV"
 

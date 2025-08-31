@@ -68,9 +68,10 @@ get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
   alpha <- paste(0, alpha*100, sep = "")
   if(alpha == "010") alpha <- "10"
   if(alpha == "02.5") alpha <- "025"
-  file <- paste(the_kernel, lugsail, alpha, "Master.rds", sep = "_")
+  file <- paste(the_kernel, lugsail, alpha, "Master", sep = "_")
   #file <- paste("data/", file, sep = "")
-  the_table <- readRDS(file)
+  #the_table <- readRDS(file)
+  the_table <- eval(parse(text=file))
 
   # Pick correct CV for each b
   cv_by_b <- sapply(new_b, function(check_b){

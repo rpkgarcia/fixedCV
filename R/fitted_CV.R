@@ -1,21 +1,23 @@
-#' Prices of 50,000 round cut diamonds
+#' Fixed Critical Values using the Fitted Method
 #'
-#' A dataset containing the prices and other attributes of almost 54,000
-#'  diamonds. The variables are as follows:
+#' A look up table containing the fitted coefficients for robust critical values. It also contains the adjusted \eqn{R^2} values for the respective fit.
 #'
-#' @format A data frame with 53940 rows and 10 variables:
+#' @format A data frame with the following columns:
 #' \itemize{
-#'   \item price: price in US dollars (\$326--\$18,823)
-#'   \item carat: weight of the diamond (0.2--5.01)
-#'   \item cut: quality of the cut (Fair, Good, Very Good, Premium, Ideal)
-#'   \item color: diamond colour, from J (worst) to D (best)
-#'   \item clarity: a measurement of how clear the diamond is
-#'      (I1 (worst), SI1, SI2, VS1, VS2, VVS1, VVS2, IF (best))
-#'   \item x: length in mm (0--10.74)
-#'   \item y: width in mm (0--58.9)
-#'   \item z: depth in mm (0--31.8)
-#'   \item depth: total depth percentage = z / mean(x, y) = 2 * z / (x + y) (43--79)
-#'   \item table: width of top of diamond relative to widest point (43--95)
+#' \item intercept:a parameter for the approximation
+#' \item beta1: a parameter for the approximation
+#' \item beta2: a parameter for the approximation
+#' \item beta3: a parameter for the approximation
+#' \item adj.r.sq: Adjusted \eqn{R^2}
+#' \item d: dimensions
+#' \item kernel: mother kernel selected
+#' \item lugsail: lugsail setting
+#' \item alpha: objective type 1 error rate
 #' }
+#' @details
+#' This data set contains critical values that the \code{get_cv} and \code{get_cv_fitted} functions search for.
+#' For a given kernel, lugsail setting, dimension, and desired \eqn{\alpha}, the critical value is approximated via the formula,
+#' \eqn{CV = \text{intercept} + \beta_1*b+ \beta_2*b^2 + \beta_3*b^3}
+#'
 "fitted_CV"
 

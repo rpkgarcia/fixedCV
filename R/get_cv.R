@@ -2,6 +2,9 @@
 
 # Analytical CV -----------------------------------------------------------
 
+
+hi <- 62
+
 c1 <- list(Bartlett = list(Mother = 1, Zero = 1.5, Over = 5/3),
            Parzen = list(Mother = 0.75, Zero = .875, Over = 0.875),
            TH = list(Mother = 1, Zero = 7/6, Over = 7/6),

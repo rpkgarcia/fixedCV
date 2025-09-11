@@ -6,7 +6,7 @@ g_q <- list("bartlett" = 1, "parzen" = 6, "th" = pi^2/4, "qs" = 1.421223)
 
 
 # Over bandwidth rule
-b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15, auto_adjust = T){
+b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = NA, auto_adjust = T){
 
   try_b <- seq(0, 0.9, by = 1/big_T) #(0:(big_T)/2)/big_T
   cv <- qchisq((1-alpha), d)
@@ -47,12 +47,25 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau =  alpha*.15, auto_a
 }
 
 
+# Tolerance level ---------------------------------------------------------
+
+get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
+  # ------- If tau uses default -------
+  if(lugsail == "Zero"){
+    tau <- -alpha^(0.5*d)/(big_T *log(abs(rho)))
+  } else{
+    tau <- alpha*.15
+  }
+  return(tau)
+}
+
+
 
 # Main ---------------------------------------------------------
 
 # tau = alpha * .15
-get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother", tau = alpha*.15,
-                  auto_adjust = T){
+get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother",
+                  tau = NA, auto_adjust = T){
 
   # dimensions
   if(!("matrix" %in% class(the_data))){
@@ -68,7 +81,11 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
     all_rhos[i] <- stats::acf(the_data[,i], plot = F)$acf[2]
   }
   rho <- mean(all_rhos)
- # tau <- -1/ (big_T * log(rho)) # delete later
+
+  # If tau is not provided, use recommended settings
+  if(is.na(tau)){
+    tau <- get_tau(alpha = alpha, lugsail = lugsail, big_T = big_T, d = d, rho = rho)
+  }
 
   # kernel statistic information
   q <- 1
@@ -79,7 +96,7 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
 
 
   # g_q based on lugsail type
-  g_q <- g_q[[the_kernel]]
+  g_q <- g_q[[tolower(the_kernel)]]
   if(lugsail == "Zero"){
     g_q <- 0
   } else if (lugsail == "Over"){
@@ -98,7 +115,6 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
     }
   }
 
-  #tau <- -.25/(big_T*log(rho)) # delete this line
   b_opt <- b_rule(rho, big_T, alpha = 0.05, d =d, w_q, g_q, tau = tau, auto_adjust = auto_adjust)
 
   return(b_opt)

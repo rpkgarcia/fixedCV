@@ -88,7 +88,8 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 # main  -------------------------------------------------------------------
 
 robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
-                      method = "simulated", tau = 0.05*.15){
+                      method = "simulated", tau = NA, alpha = 0.05,
+                      conf.level = NA){
 
   # ------- Basic statistics needed from the LM object -------
   kernel_fct <- bartlett
@@ -125,9 +126,16 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   summary <- matrix(0, nrow = length(coefs), ncol = 4)
   for(i in 1:length(coefs)){
 
+    if(is.na(tau)){
+      the_tau <- get_tau(alpha = alpha, lugsail = lugsail, big_T = big_T, d = 1,
+                         rho =stats::acf(errors[,i], plot = F)$acf[2])
+    } else{
+      the_tau <- tau
+    }
+
     # get the beta cov matrix
     the_b <- get_b(errors[,i], the_kernel = tolower(the_kernel),
-                   lugsail=lugsail, tau = tau) # only consider the correlation levels for coef you want
+                   lugsail=lugsail, tau = the_tau) # only consider the correlation levels for coef you want
     omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                            big_T, d = length(coefs))
     beta_cov <- (solve(M)%*%omega%*%solve(M))
@@ -152,9 +160,31 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     coefs_p_values[i] <- keep$p_value
     cv_table[i, ] <- keep$cv_table
   }
+
   summary <- data.frame(summary, coefs_p_values)
   rownames(summary) <- names(coefs)
   colnames(summary) <- c("Estimate", "Std. Error", "t value","b", "P(>|t|)")
+
+  # Confidence interval
+  if(!is.na(conf.level)){
+    if(conf.level %in% c(.90, .95, .975, .99)){
+      the_alpha <- 1-conf.level
+      if(conf.level == .90){
+        col_index <- 3
+      } else if(conf.level == .95){
+        col_index <- 4
+      } else if(conf.level == .975){
+        col_index <- 5
+      } else {
+        col_index <- 6
+      }
+      cvs <- cv_table[, col_index]
+      UB <- summary[,1] + cvs*summary[,2]
+      LB <- summary[,1] - cvs*summary[,2]
+      summary[,"conf.low"] <- LB
+      summary[,"conf.high"] <- UB
+    }
+  }
 
   all_rhos <- rep(NA, 1)
   for(i in 1:ncol(errors)){
@@ -163,8 +193,21 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   summary$b <- NULL # delete the b column from the summary table
 
   # ------- F-test -------
+  all_rhos <- rep(0, length(coefs))
+  for(i in 1:length(coefs)){
+    all_rhos[i] <- stats::acf(errors[,-1], plot = F)$acf[2]
+  }
+  rho <- mean(all_rhos)
+
+  if(is.na(tau)){
+    the_tau <- get_tau(alpha = alpha, lugsail = lugsail, big_T = big_T,
+                       d = length(coefs), rho = rho)
+  } else{
+    the_tau <- tau
+  }
+
   the_b <- get_b(errors[,-1], the_kernel = tolower(the_kernel),
-                 lugsail = lugsail, tau = tau)
+                 lugsail = lugsail, tau = the_tau)
   omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                          big_T, d = length(coefs))
   omega  <- as.matrix(omega) # Check if computationally PD

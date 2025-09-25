@@ -252,7 +252,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   return_me <- list("Summary_Table" = summary,
                     "F_test" = F_stat,
                     "CV_table" = cv_table,
-                    "Agumented_DickeyFuller" = adf)
+                    "Augmented_DickeyFuller" = adf)
   return(return_me)
 }
 

@@ -120,7 +120,7 @@ F_stats <- function(the_means, omega_hats, d = 1, big_T){
     F_stat_by_b <- apply(omega_hats, 1, function(one_omega_hat){
       one_omega_hat <- matrix(one_omega_hat, nrow = sqrt(length(one_omega_hat)))
       one_omega_hat <- one_omega_hat[1:d, 1:d]
-      one_omega_hat <- as.matrix(nearPD(one_omega_hat)$mat)
+      one_omega_hat <- as.matrix(Matrix::nearPD(one_omega_hat)$mat)
       inv_one_omega <- solve(one_omega_hat)
       num <- (the_means - null_means)[1: d]
       F_stat <-  big_T*(num%*% inv_one_omega  %*%num)/ d

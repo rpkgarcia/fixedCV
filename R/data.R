@@ -101,3 +101,23 @@
 #' @format NULL
 #' @rdname simulated_CV
 "QS_Zero_10_Master"
+
+#' Climate data
+#'
+#' A local dataset obtained using the `hockeystick` R package
+#' containing global climate data filtered to a monthly resolution from
+#' 1984-12-31 to 2025-01-31.
+#' @format A data frame with 7 columns
+#' \describe{
+#'   \item{date}{the last day of the month for the monthly observations with
+#'   format YYYY-MM-DD}
+#'   \item{year}{the year of the observation}
+#'   \item{carbon}{NOAA's monthly average carbon dioxide measurement}
+#'   \item{anomaly}{combined global land- and sea-surface temperature anomaly
+#'   (a difference between the seasonal trends from 1980-2015) in Celsius}
+#'   \item{method}{the method used to obtain `gmsl` measurement. One of
+#'   `gmsl_tide` (historic tide guage) or `gmsl_sat` (satellite altimeter). }
+#'   \item{gmsl}{global mean sea level measurement in mm}
+#'   \item{methane}{NOAA's monthly globally averaged methane measurement in ppb.}
+#' }
+"climate_data"

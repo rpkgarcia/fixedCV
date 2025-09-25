@@ -112,6 +112,6 @@ LRV_estimator <- function(b, all_autocovariances,
                                    lugsail_parameters = lug_para,
                                    mother_omega= omega_mother, d=d)
   }
-  omega <- nearPD(omega)$mat # Check if computationally PD
+  omega <- Matrix::nearPD(omega)$mat # Check if computationally PD
   return(omega)
 }

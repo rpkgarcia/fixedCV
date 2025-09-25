@@ -134,7 +134,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     }
 
     # get the beta cov matrix
-    the_b <- get_b(errors[,i], the_kernel = tolower(the_kernel),
+    the_b <- get_b(errors[,i], alpha = alpha, the_kernel = tolower(the_kernel),
                    lugsail=lugsail, tau = the_tau) # only consider the correlation levels for coef you want
     omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                            big_T, d = length(coefs))
@@ -206,7 +206,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     the_tau <- tau
   }
 
-  the_b <- get_b(errors[,-1], the_kernel = tolower(the_kernel),
+  the_b <- get_b(errors[,-1], alpha = alpha, the_kernel = tolower(the_kernel),
                  lugsail = lugsail, tau = the_tau)
   omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                          big_T, d = length(coefs))

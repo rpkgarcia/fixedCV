@@ -12,5 +12,11 @@ LazyData: true
 Depends: 
     R (>= 3.5)
 Imports: 
-    Matrix
-RoxygenNote: 7.3.2
+    Matrix,
+    aTSA
+RoxygenNote: 7.3.3
+Suggests: 
+    knitr,
+    rmarkdown,
+    ggplot2
+VignetteBuilder: knitr

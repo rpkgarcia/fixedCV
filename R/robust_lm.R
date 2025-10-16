@@ -1,4 +1,3 @@
-library(Matrix)
 
 
 # Description -------------------------------------------------------------
@@ -47,7 +46,7 @@ library(Matrix)
 # fit <- lm(y ~. , the_data)
 #
 #
-#
+
 #
 
 # support functions -------------------------------------------------------
@@ -89,7 +88,7 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 
 robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                       method = "simulated", tau = NA, alpha = 0.05,
-                      conf.level = NA){
+                      conf.level = F){
 
   # ------- Basic statistics needed from the LM object -------
   kernel_fct <- bartlett
@@ -105,6 +104,12 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     q <- 2
   }
 
+
+  if(!(alpha %in% c(.10, .05, .025, .01)) & conf.level==T){
+    alpha <- 0.05
+    Warning("The arugment alpha must be equal to 0.10, 0.05, 0.025, or .01 to generate a CI. The value alpha has been changed from user input to to 0.05 to create 95% CIs.")
+  }
+
   # ------- Basic statistics needed from the LM object -------
   X <- model.matrix(fit)
   coefs <- fit$coefficients
@@ -113,6 +118,25 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   errors <- errors - apply(errors, 2, mean) # center immediately
   big_T <- nrow(fit$model)
   M <- t(X)%*%X/big_T
+
+  # ------- Checking if Stationary -------
+  statistic <- rep(NA, ncol(X))
+  parameter <- rep(NA, ncol(X))
+  alternative <- rep(NA, ncol(X))
+  p.value <- rep(NA, ncol(X))
+
+  for(i in 1:ncol(X)){
+    adf_results <- suppressWarnings(tseries::adf.test(errors[,i]))
+    statistic[i] <- adf_results$statistic
+    parameter[i] <- adf_results$parameter
+    alternative[i] <- adf_results$alternative
+    p.value[i] <- adf_results$p.value
+    if(adf_results$p.value >0.05){
+      Warning(paste("Non-stationarity detected corresponding to variable", colnames(X)[i], "with p.value ",
+                    round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
+    }
+  }
+  adf <- data.frame(statistic, parameter, alternative, p.value)
 
   # ------- AutoCovariance Matrices  -------
   # [#, ] the lag (0, ..., big_T-1)
@@ -134,7 +158,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     }
 
     # get the beta cov matrix
-    the_b <- get_b(errors[,i], the_kernel = tolower(the_kernel),
+    the_b <- get_b(errors[,i], alpha = alpha, the_kernel = tolower(the_kernel),
                    lugsail=lugsail, tau = the_tau) # only consider the correlation levels for coef you want
     omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                            big_T, d = length(coefs))
@@ -166,16 +190,14 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   colnames(summary) <- c("Estimate", "Std. Error", "t value","b", "P(>|t|)")
 
   # Confidence interval
-  if(!is.na(conf.level)){
-    if(conf.level %in% c(.90, .95, .975, .99)){
-      the_alpha <- 1-conf.level
-      if(conf.level == .90){
+  if(conf.level == T){
+      if(alpha == .10){
         col_index <- 3
-      } else if(conf.level == .95){
+      } else if(alpha == .05){
         col_index <- 4
-      } else if(conf.level == .975){
+      } else if(alpha== .025){
         col_index <- 5
-      } else {
+      } else if(alpha == .05){
         col_index <- 6
       }
       cvs <- cv_table[, col_index]
@@ -183,7 +205,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
       LB <- summary[,1] - cvs*summary[,2]
       summary[,"conf.low"] <- LB
       summary[,"conf.high"] <- UB
-    }
+
   }
 
   all_rhos <- rep(NA, 1)
@@ -206,7 +228,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     the_tau <- tau
   }
 
-  the_b <- get_b(errors[,-1], the_kernel = tolower(the_kernel),
+  the_b <- get_b(errors[,-1], alpha = alpha, the_kernel = tolower(the_kernel),
                  lugsail = lugsail, tau = the_tau)
   omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                          big_T, d = length(coefs))
@@ -229,7 +251,8 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   # ------- Return Values -------
   return_me <- list("Summary_Table" = summary,
                     "F_test" = F_stat,
-                    "CV_table" = cv_table)
+                    "CV_table" = cv_table,
+                    "Augmented_DickeyFuller" = adf)
   return(return_me)
 }
 

@@ -122,7 +122,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   # ------- Checking if Stationary -------
   statistic <- rep(NA, ncol(X))
   parameter <- rep(NA, ncol(X))
-  alternative <- rep(NA, ncol(X))
+  conclusion <- rep(NA, ncol(X))
   p.value <- rep(NA, ncol(X))
 
   for(i in 1:ncol(X)){
@@ -143,7 +143,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                     round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
     }
   }
-  adf <- data.frame(statistic, parameter, alternative, p.value)
+  adf <- data.frame(statistic, parameter, conclusion, p.value)
 
   # ------- AutoCovariance Matrices  -------
   # [#, ] the lag (0, ..., big_T-1)

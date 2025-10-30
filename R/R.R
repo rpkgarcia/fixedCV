@@ -1,3 +1,5 @@
+# Suppress R CMD check notes for global variables
+utils::globalVariables(c("fitted_CV", "b"))
 
 R <- function(h, the_sim_data, big_T){
   index <- 1:(big_T -h)

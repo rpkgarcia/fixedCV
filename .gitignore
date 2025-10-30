@@ -3,3 +3,9 @@
 .RData
 .Ruserdata
 .DS_Store
+inst/doc
+/doc/
+/Meta/
+PACKAGE_FIXES.md
+NEXT_STEPS.md
+CLAUDE.md

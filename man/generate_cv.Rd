@@ -13,7 +13,7 @@ generate_cv_multi(b, d = 2, alpha = 0.05, the_kernel = bartlett,
                   num_replicates = 50000, replicate_size = 1000)
 generate_cv_uni(b, alpha = 0.05, the_kernel = bartlett,
                 lugsail_type = "Mother", q = 1, return_F_stats = F,
-                num_replicates = 50000, replicate_size = 1000)
+                replicate_size = 1000, num_replicates = 50000)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -27,7 +27,7 @@ a numeric vector of length 1, denotes the number of dimensions.
   \item{alpha}{
 a numeric vector, denotes the significance level.
 }
-  \item{kernel}{
+  \item{the_kernel}{
 a function which generates the weights of the mother kernel.
 }
   \item{lugsail_type}{
@@ -56,7 +56,7 @@ It is recommended to not adjust the default settings for \code{num_replicates} a
 \value{
 If \code{return_F_stats = FALSE}, then a matrix of critical values is returned where the rows indicate each value of \code{b} specified and the columns are each value of \code{alpha} specified.
 
-If \code{return_F_stats = TRUE}, then a list is returned. The first element of the list is the matrix of critical values as described above (named \code{CV}). The second element (named \code{F_stats}) is matrix of \code{num_replicates} rows and \code{\length(b)} columns.  Each row corresponds to a simulated data set, and each element in the row corresponds to a test statistic for that data set calculated with the various \code{b} values supplied.
+If \code{return_F_stats = TRUE}, then a list is returned. The first element of the list is the matrix of critical values as described above (named \code{CV}). The second element (named \code{F_stats}) is matrix of \code{num_replicates} rows and \code{length(b)} columns.  Each row corresponds to a simulated data set, and each element in the row corresponds to a test statistic for that data set calculated with the various \code{b} values supplied.
 }
 \references{
 %% ~put references to the literature/web site here ~

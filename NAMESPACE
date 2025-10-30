@@ -1,2 +1,3 @@
 exportPattern("^[[:alpha:]]+")
 import(Matrix)
+importFrom("stats", "dchisq", "model.matrix", "poly", "qchisq", "quantile", "rnorm")

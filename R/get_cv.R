@@ -49,7 +49,7 @@ k2 <- function(kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
 }
 
 get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail){
-  small_cv <- qchisq(1-alpha, d=d)
+  small_cv <- qchisq(1-alpha, df=d)
   if(d == 1){
     k1 <- k1(kernel = the_kernel, type = lugsail, d = d, small_cv = small_cv)
     k2 <- k2(kernel = the_kernel, type = lugsail,  small_cv = small_cv)
@@ -116,8 +116,43 @@ get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
 
 # Main Function -----------------------------------------------------------
 
-
-
+#' Get Fixed-b Critical Values
+#'
+#' Retrieves fixed-b critical values for robust hypothesis testing. Critical values
+#' can be computed using simulated lookup tables, fitted polynomial approximations,
+#' or analytical formulas.
+#'
+#' @param new_b Numeric vector of bandwidth values between 0 and 1. The bandwidth
+#'   represents the proportion of autocovariances given non-zero weight.
+#' @param d Integer, the dimension (degrees of freedom) of the test statistic.
+#'   Default is 1 for t-tests.
+#' @param alpha Numeric significance level for the test. Common values are 0.01,
+#'   0.025, 0.05, or 0.10. Default is 0.05.
+#' @param the_kernel Character string specifying the kernel function. Options are
+#'   \code{"Bartlett"} (default), \code{"Parzen"}, \code{"TH"}, or \code{"QS"}.
+#' @param lugsail Character string specifying the lugsail transformation. Options are
+#'   \code{"Mother"} (default), \code{"Zero"}, or \code{"Over"}.
+#' @param method Character string specifying computation method. Options are
+#'   \code{"simulated"} (default, uses pre-computed tables), \code{"fitted"}
+#'   (polynomial approximation), or \code{"analytical"} (closed-form formulas).
+#'
+#' @return Numeric vector of critical values corresponding to each bandwidth in \code{new_b}.
+#'   When \code{b = 0}, returns chi-square critical values.
+#'
+#' @export
+#' @examples
+#' # Get critical value for single bandwidth
+#' get_cv(0.1, d = 1, alpha = 0.05)
+#'
+#' # Get critical values for multiple bandwidths
+#' get_cv(c(0, 0.1, 0.2, 0.3), d = 1, alpha = 0.05)
+#'
+#' # Using different methods
+#' get_cv(0.1, method = "fitted")
+#' get_cv(0.1, method = "analytical")
+#'
+#' # For F-test with 3 degrees of freedom
+#' get_cv(0.1, d = 3, alpha = 0.05)
 get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
                    lugsail = "Mother", method = "simulated"){
   if(method == "simulated"){

@@ -63,7 +63,42 @@ get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
 
 # Main ---------------------------------------------------------
 
-# tau = alpha * .15
+#' Automatic Bandwidth Selection
+#'
+#' Selects optimal bandwidth for long-run variance estimation by controlling
+#' Type I error distortion. The bandwidth determines what proportion of
+#' autocovariances receive non-zero weight in the spectral variance estimator.
+#'
+#' @param the_data Numeric vector, matrix, or data frame containing the data
+#'   (typically residuals or moment conditions from a model). For matrices,
+#'   each column represents a different series.
+#' @param alpha Numeric significance level for hypothesis testing. Default is 0.05.
+#' @param the_kernel Character string specifying the kernel function. Options are
+#'   \code{"Bartlett"} (default), \code{"Parzen"}, \code{"TH"}, or \code{"QS"}.
+#' @param lugsail Character string specifying the lugsail transformation. Options are
+#'   \code{"Mother"} (default), \code{"Zero"}, or \code{"Over"}.
+#' @param tau Numeric tolerance level for acceptable Type I error distortion.
+#'   If \code{NA} (default), uses recommended values: \code{-alpha^(0.5*d)/(T*log(rho))}
+#'   for Zero lugsail, \code{alpha*0.15} for others.
+#' @param auto_adjust Logical indicating whether to automatically increase tolerance
+#'   if no suitable bandwidth is found. Default is \code{TRUE}.
+#'
+#' @return Numeric scalar, the selected optimal bandwidth value between 0 and 1.
+#'
+#' @export
+#' @examples
+#' # Simulate AR(1) data
+#' set.seed(123)
+#' data <- arima.sim(list(ar = 0.7), n = 100)
+#'
+#' # Get optimal bandwidth
+#' get_b(data)
+#'
+#' # With different kernel
+#' get_b(data, the_kernel = "QS")
+#'
+#' # With custom tolerance
+#' get_b(data, tau = 0.01)
 get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother",
                   tau = NA, auto_adjust = T){
 

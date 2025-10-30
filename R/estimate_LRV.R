@@ -1,4 +1,5 @@
-library(Matrix)
+#' @import Matrix
+NULL
 
 # For mother kernels
 #' LRV estimator using mother kernels (internal)

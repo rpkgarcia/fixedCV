@@ -1,6 +1,9 @@
 # Suppress R CMD check notes for global variables
 utils::globalVariables(c("fitted_CV", "b"))
 
+#' @importFrom stats dchisq model.matrix poly qchisq quantile rnorm acf
+NULL
+
 #' Compute autocovariance matrices (internal)
 #' @keywords internal
 #' @noRd

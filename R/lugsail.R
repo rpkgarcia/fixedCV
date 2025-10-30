@@ -1,4 +1,6 @@
-# Lugsail Transformation (main)
+#' Lugsail Transformation (internal)
+#' @keywords internal
+#' @noRd
 lugsail <- function(x, lugsail_parameters, the_kernel= bartlett){
   r <- lugsail_parameters$r
   c <- lugsail_parameters$c
@@ -21,8 +23,9 @@ lugsail <- function(x, lugsail_parameters, the_kernel= bartlett){
   return(y)
 }
 
-# Lugsail Support Function to get lugsail parmeters
-# (default) b = Andrews (1991) Rule: 0.75*big_T^(-2*q/(2*q+1))
+#' Get lugsail parameters (internal)
+#' @keywords internal
+#' @noRd
 get_lugsail_parameters <- function(big_T, q, method = "Zero",
                                    b = 0.75*big_T^(-2*q/(2*q+1))){
 
@@ -46,4 +49,3 @@ get_lugsail_parameters <- function(big_T, q, method = "Zero",
   parameters <- list(r = r, c = round(c, 2))
   return(parameters)
 }
-

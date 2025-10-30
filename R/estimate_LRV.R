@@ -1,6 +1,9 @@
 library(Matrix)
 
 # For mother kernels
+#' LRV estimator using mother kernels (internal)
+#' @keywords internal
+#' @noRd
 LRV_mother_estimator <- function(b, all_autocovariances, the_kernel,
                                  big_T= nrow(all_autocovariances),
                                  d = ncol(all_autocovariances)){
@@ -28,6 +31,9 @@ LRV_mother_estimator <- function(b, all_autocovariances, the_kernel,
 
 # For Lugsail Kernels
 # Corrects the non-positive diagonal elements.
+#' LRV estimator using lugsail kernels (internal)
+#' @keywords internal
+#' @noRd
 LRV_lugsail_estimator <- function(b, all_autocovariances,
                           the_kernel, lugsail_parameters = list(r = 1, c= 0),
                           mother_omega, big_T= nrow(all_autocovariances),
@@ -65,6 +71,9 @@ LRV_lugsail_estimator <- function(b, all_autocovariances,
 
 
 # Master
+#' Main LRV estimator (internal)
+#' @keywords internal
+#' @noRd
 LRV_estimator <- function(b, all_autocovariances,
                           the_kernel, lugsail_type,
                           big_T= nrow(all_autocovariances),

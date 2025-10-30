@@ -50,6 +50,9 @@
 #
 
 # support functions -------------------------------------------------------
+#' Compute p-values from test statistics (internal)
+#' @keywords internal
+#' @noRd
 p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
                      lugsail = "Mother", method = "simulated"){
 

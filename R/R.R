@@ -1,6 +1,9 @@
 # Suppress R CMD check notes for global variables
 utils::globalVariables(c("fitted_CV", "b"))
 
+#' Compute autocovariance matrices (internal)
+#' @keywords internal
+#' @noRd
 R <- function(h, the_sim_data, big_T){
   index <- 1:(big_T -h)
   the_sim_data <- as.matrix(the_sim_data)
@@ -23,6 +26,9 @@ R <- function(h, the_sim_data, big_T){
 }
 
 # For 1-dimentional data s
+#' Compute autocovariance for 1-D data (internal)
+#' @keywords internal
+#' @noRd
 R_d1 <- function(h, one_sim_data){
   big_T <- length(one_sim_data)
   est_mean <- mean(one_sim_data)
@@ -40,6 +46,9 @@ R_d1 <- function(h, one_sim_data){
 }
 
 # Calculate all the autocovariances for a 1-dimensional simulation
+#' Calculate all autocovariances for 1-D simulation (internal)
+#' @keywords internal
+#' @noRd
 all_R <- function(one_sim_data){
   big_T <- length(one_sim_data)
   all_auto_cov <- sapply(0:(big_T-1), R_d1, one_sim_data= one_sim_data)

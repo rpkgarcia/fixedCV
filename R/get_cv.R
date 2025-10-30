@@ -2,30 +2,41 @@
 
 # Analytical CV -----------------------------------------------------------
 
-
+#' Internal constants for analytical critical value computation
+#' @keywords internal
+#' @noRd
 hi <- 62
 
+#' @keywords internal
+#' @noRd
 c1 <- list(Bartlett = list(Mother = 1, Zero = 1.5, Over = 5/3),
            Parzen = list(Mother = 0.75, Zero = .875, Over = 0.875),
            TH = list(Mother = 1, Zero = 7/6, Over = 7/6),
            QS = list(Mother = 5/4, Zero = 1.631486, Over = 1.550773))
 
+#' @keywords internal
+#' @noRd
 c2 <- list(Bartlett = list(Mother = 2/3, Zero = 4/3, Over = 1.7037037),
            Parzen = list(Mother = 151/280, Zero = 0.6877976, Over = 0.7050182),
            TH = list(Mother = 3/4, Zero = 0.9641497, Over = 0.9864201),
            QS = list(Mother = 1, Zero = 1.6912606, Over = 1.5342612))
 
-
+#' @keywords internal
+#' @noRd
 c3 <- list(Bartlett = list(Mother = -1/3, Zero = -0.583333, Over = -0.6296296),
            Parzen = list(Mother = -7/40, Zero = -0.21875, Over = -0.21389),
            TH = list(Mother = -0.297358, Zero = -0.371697, Over = -0.3634371),
            QS = list(Mother = -0.4221716, Zero = -0.5555723, Over = -0.4908948))
 
+#' @keywords internal
+#' @noRd
 c4 <- list(Bartlett = list(Mother = -1/6, Zero = -0.2166667, Over = -0.3271605),
            Parzen = list(Mother = -0.09196, Zero = -0.1340402 , Over = -0.1332445),
            TH = list(Mother = -0.172358, Zero = -0.2538967, Over = -0.2511288),
            QS = list(Mother = -0.3166412, Zero = -0.5454080, Over = -0.4908948))
 
+#' @keywords internal
+#' @noRd
 k1 <- function(d = 1, kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
   c1 <- c1[[kernel]][[type]]
   c2 <- c2[[kernel]][[type]]
@@ -33,7 +44,8 @@ k1 <- function(d = 1, kernel = "Bartlett", type = "Mother", small_cv = 3.841459)
   return(k1)
 }
 
-
+#' @keywords internal
+#' @noRd
 k2 <- function(kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
   c1 <- c1[[kernel]][[type]]
   c2 <- c2[[kernel]][[type]]
@@ -48,6 +60,8 @@ k2 <- function(kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
   return(k2)
 }
 
+#' @keywords internal
+#' @noRd
 get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail){
   small_cv <- qchisq(1-alpha, df=d)
   if(d == 1){
@@ -65,6 +79,8 @@ get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail){
 
 # Simulated CV ------------------------------------------------------------
 
+#' @keywords internal
+#' @noRd
 get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
 
   # Read in the simulated fitted values based on the method
@@ -91,6 +107,8 @@ get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
 
 # Fitted CV ---------------------------------------------------------------
 
+#' @keywords internal
+#' @noRd
 get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
   # Read in all fitted values for the fitted CV method
   #the_fits <- read.csv("data/fitted_CV.csv")

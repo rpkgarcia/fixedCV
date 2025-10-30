@@ -1,11 +1,13 @@
 # mother kernel g_q
 # zero lugsail g_q = 0
 # over lugsail is the negative of mother
+#' @keywords internal
+#' @noRd
 g_q <- list("bartlett" = 1, "parzen" = 6, "th" = pi^2/4, "qs" = 1.421223)
 
-
-
-# Over bandwidth rule
+#' Bandwidth selection rule (internal)
+#' @keywords internal
+#' @noRd
 b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = NA, auto_adjust = T){
 
   try_b <- seq(0, 0.9, by = 1/big_T) #(0:(big_T)/2)/big_T
@@ -49,6 +51,9 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = NA, auto_adjust = 
 
 # Tolerance level ---------------------------------------------------------
 
+#' Get tolerance level (internal)
+#' @keywords internal
+#' @noRd
 get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
   # ------- If tau uses default -------
   if(lugsail == "Zero"){

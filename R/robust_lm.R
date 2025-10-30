@@ -122,21 +122,28 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   # ------- Checking if Stationary -------
   statistic <- rep(NA, ncol(X))
   parameter <- rep(NA, ncol(X))
-  alternative <- rep(NA, ncol(X))
+  conclusion <- rep(NA, ncol(X))
   p.value <- rep(NA, ncol(X))
 
   for(i in 1:ncol(X)){
     adf_results <- suppressWarnings(tseries::adf.test(errors[,i]))
     statistic[i] <- adf_results$statistic
     parameter[i] <- adf_results$parameter
-    alternative[i] <- adf_results$alternative
     p.value[i] <- adf_results$p.value
+    if(p.value[i]<=0.1){
+      p.value[i] <- "<=0.1"
+    }
+    if(p.value[i]< 0.5){
+      conclusion[i] <- "Stationary"
+    } else {
+      conclusion[i] <- "Non-Stationary"
+    }
     if(adf_results$p.value >0.05){
       Warning(paste("Non-stationarity detected corresponding to variable", colnames(X)[i], "with p.value ",
                     round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
     }
   }
-  adf <- data.frame(statistic, parameter, alternative, p.value)
+  adf <- data.frame(statistic, parameter, conclusion, p.value)
 
   # ------- AutoCovariance Matrices  -------
   # [#, ] the lag (0, ..., big_T-1)

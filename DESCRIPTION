@@ -14,9 +14,12 @@ Depends:
 Imports: 
     Matrix
 RoxygenNote: 7.3.3
-Suggests: 
+Suggests:
     knitr,
     rmarkdown,
     ggplot2,
-    aTSA
+    aTSA,
+    dplyr,
+    lubridate,
+    GGally
 VignetteBuilder: knitr

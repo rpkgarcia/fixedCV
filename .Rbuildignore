@@ -1,3 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^doc$
+^Meta$
+^\.claude$
+^PACKAGE_FIXES\.md$
+^NEXT_STEPS\.md$
+^CLAUDE\.md$

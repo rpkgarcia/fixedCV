@@ -202,6 +202,9 @@ simulate_f_stat <- function(big_T = 1000, d = 1, the_kernel = bartlett, q=1, lug
 
 # Main --------------------------------------------------------------------
 
+#' Generate critical values for multivariate case (internal)
+#' @keywords internal
+#' @noRd
 generate_cv_multi <- function(b, d = 2, alpha = 0.05,
                         the_kernel = bartlett, lugsail_type = "Mother",  q=1,
                         return_F_stats = F,

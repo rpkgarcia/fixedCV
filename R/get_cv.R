@@ -2,30 +2,41 @@
 
 # Analytical CV -----------------------------------------------------------
 
-
+#' Internal constants for analytical critical value computation
+#' @keywords internal
+#' @noRd
 hi <- 62
 
+#' @keywords internal
+#' @noRd
 c1 <- list(Bartlett = list(Mother = 1, Zero = 1.5, Over = 5/3),
            Parzen = list(Mother = 0.75, Zero = .875, Over = 0.875),
            TH = list(Mother = 1, Zero = 7/6, Over = 7/6),
            QS = list(Mother = 5/4, Zero = 1.631486, Over = 1.550773))
 
+#' @keywords internal
+#' @noRd
 c2 <- list(Bartlett = list(Mother = 2/3, Zero = 4/3, Over = 1.7037037),
            Parzen = list(Mother = 151/280, Zero = 0.6877976, Over = 0.7050182),
            TH = list(Mother = 3/4, Zero = 0.9641497, Over = 0.9864201),
            QS = list(Mother = 1, Zero = 1.6912606, Over = 1.5342612))
 
-
+#' @keywords internal
+#' @noRd
 c3 <- list(Bartlett = list(Mother = -1/3, Zero = -0.583333, Over = -0.6296296),
            Parzen = list(Mother = -7/40, Zero = -0.21875, Over = -0.21389),
            TH = list(Mother = -0.297358, Zero = -0.371697, Over = -0.3634371),
            QS = list(Mother = -0.4221716, Zero = -0.5555723, Over = -0.4908948))
 
+#' @keywords internal
+#' @noRd
 c4 <- list(Bartlett = list(Mother = -1/6, Zero = -0.2166667, Over = -0.3271605),
            Parzen = list(Mother = -0.09196, Zero = -0.1340402 , Over = -0.1332445),
            TH = list(Mother = -0.172358, Zero = -0.2538967, Over = -0.2511288),
            QS = list(Mother = -0.3166412, Zero = -0.5454080, Over = -0.4908948))
 
+#' @keywords internal
+#' @noRd
 k1 <- function(d = 1, kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
   c1 <- c1[[kernel]][[type]]
   c2 <- c2[[kernel]][[type]]
@@ -33,7 +44,8 @@ k1 <- function(d = 1, kernel = "Bartlett", type = "Mother", small_cv = 3.841459)
   return(k1)
 }
 
-
+#' @keywords internal
+#' @noRd
 k2 <- function(kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
   c1 <- c1[[kernel]][[type]]
   c2 <- c2[[kernel]][[type]]
@@ -48,8 +60,10 @@ k2 <- function(kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
   return(k2)
 }
 
+#' @keywords internal
+#' @noRd
 get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail){
-  small_cv <- qchisq(1-alpha, d=d)
+  small_cv <- qchisq(1-alpha, df=d)
   if(d == 1){
     k1 <- k1(kernel = the_kernel, type = lugsail, d = d, small_cv = small_cv)
     k2 <- k2(kernel = the_kernel, type = lugsail,  small_cv = small_cv)
@@ -65,6 +79,8 @@ get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail){
 
 # Simulated CV ------------------------------------------------------------
 
+#' @keywords internal
+#' @noRd
 get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
 
   # Read in the simulated fitted values based on the method
@@ -91,6 +107,8 @@ get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
 
 # Fitted CV ---------------------------------------------------------------
 
+#' @keywords internal
+#' @noRd
 get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
   # Read in all fitted values for the fitted CV method
   #the_fits <- read.csv("data/fitted_CV.csv")
@@ -116,8 +134,43 @@ get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
 
 # Main Function -----------------------------------------------------------
 
-
-
+#' Get Fixed-b Critical Values
+#'
+#' Retrieves fixed-b critical values for robust hypothesis testing. Critical values
+#' can be computed using simulated lookup tables, fitted polynomial approximations,
+#' or analytical formulas.
+#'
+#' @param new_b Numeric vector of bandwidth values between 0 and 1. The bandwidth
+#'   represents the proportion of autocovariances given non-zero weight.
+#' @param d Integer, the dimension (degrees of freedom) of the test statistic.
+#'   Default is 1 for t-tests.
+#' @param alpha Numeric significance level for the test. Common values are 0.01,
+#'   0.025, 0.05, or 0.10. Default is 0.05.
+#' @param the_kernel Character string specifying the kernel function. Options are
+#'   \code{"Bartlett"} (default), \code{"Parzen"}, \code{"TH"}, or \code{"QS"}.
+#' @param lugsail Character string specifying the lugsail transformation. Options are
+#'   \code{"Mother"} (default), \code{"Zero"}, or \code{"Over"}.
+#' @param method Character string specifying computation method. Options are
+#'   \code{"simulated"} (default, uses pre-computed tables), \code{"fitted"}
+#'   (polynomial approximation), or \code{"analytical"} (closed-form formulas).
+#'
+#' @return Numeric vector of critical values corresponding to each bandwidth in \code{new_b}.
+#'   When \code{b = 0}, returns chi-square critical values.
+#'
+#' @export
+#' @examples
+#' # Get critical value for single bandwidth
+#' get_cv(0.1, d = 1, alpha = 0.05)
+#'
+#' # Get critical values for multiple bandwidths
+#' get_cv(c(0, 0.1, 0.2, 0.3), d = 1, alpha = 0.05)
+#'
+#' # Using different methods
+#' get_cv(0.1, method = "fitted")
+#' get_cv(0.1, method = "analytical")
+#'
+#' # For F-test with 3 degrees of freedom
+#' get_cv(0.1, d = 3, alpha = 0.05)
 get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
                    lugsail = "Mother", method = "simulated"){
   if(method == "simulated"){

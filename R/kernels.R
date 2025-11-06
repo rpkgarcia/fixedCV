@@ -1,5 +1,36 @@
+#' Kernel Functions for Long-Run Variance Estimation
+#'
+#' Kernel weight functions used in spectral variance (long-run variance) estimation.
+#' These functions generate weights for autocovariances in robust inference procedures.
+#'
+#' @param x Numeric value, typically in the range [0, 1], representing the scaled lag.
+#'
+#' @return Numeric kernel weight value.
+#'
+#' @details
+#' The kernel functions are:
+#' \itemize{
+#'   \item \code{bartlett}: Bartlett (Newey-West) kernel. q = 1 kernel.
+#'   \item \code{parzen}: Parzen kernel. q = 2 kernel.
+#'   \item \code{th}: Tukey-Hanning kernel. q = 2 kernel.
+#'   \item \code{qs}: Quadratic Spectral kernel. q = 2 kernel.
+#' }
+#'
+#' @name kernels
+#' @examples
+#' # Evaluate kernels at x = 0.5
+#' bartlett(0.5)
+#' parzen(0.5)
+#' th(0.5)
+#' qs(0.5)
+#'
+#' # Plot kernel shapes
+#' x <- seq(-1.5, 1.5, length.out = 200)
+#' plot(x, sapply(x, bartlett), type = "l", ylab = "Weight", main = "Bartlett Kernel")
+NULL
 
-# Bartlett
+#' @rdname kernels
+#' @export
 bartlett <- function(x){
   if(abs(x)<1){
     k_x <- 1-abs(x)
@@ -9,7 +40,8 @@ bartlett <- function(x){
   return(k_x)
 }
 
-# Quadratic Spectral
+#' @rdname kernels
+#' @export
 qs <- function(x){
   p1 <- sin(6*pi*x/5)/(6*pi*x/5)
   p2 <- cos(6*pi*x/5)
@@ -21,7 +53,8 @@ qs <- function(x){
   return(k_x)
 }
 
-# Parzen
+#' @rdname kernels
+#' @export
 parzen <- function(x){
   k_x <- 0
   if(abs(x)<=1){
@@ -34,8 +67,8 @@ parzen <- function(x){
   return(k_x)
 }
 
-
-# Tukey-Hanning
+#' @rdname kernels
+#' @export
 th <- function(x){
   k_x <- 0
   if(abs(x)<=1){

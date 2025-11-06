@@ -149,6 +149,9 @@ get_kernel_F_stats_uni <- function(new_b, all_sim_data, the_means,
 
 # Main --------------------------------------------------------------------
 
+#' Generate critical values for univariate case (internal)
+#' @keywords internal
+#' @noRd
 generate_cv_uni <- function(b, alpha = 0.05, the_kernel = bartlett, lugsail_type = "Mother", q=1, return_F_stats = F, replicate_size = 1000, num_replicates = 50000){
 
   big_T = replicate_size

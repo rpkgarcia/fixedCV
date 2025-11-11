@@ -23,5 +23,8 @@ Suggests:
     rmarkdown,
     ggplot2,
     aTSA,
-    tseries
+    tseries,
+    dplyr,
+    lubridate,
+    GGally
 VignetteBuilder: knitr

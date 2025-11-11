@@ -1,0 +1,231 @@
+---
+title: "An Introduction to Robust Inference for Sequential Data with the R Package fixedCV"
+author: "Rebecca Kurtz-Garcia"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{An Introduction to Robust Inference for Sequential Data with the R Package fixedCV}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+```{r setup, message = FALSE, warning = FALSE}
+library(fixedCV)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+```
+
+# Introduction
+
+The R package `fixedCV` provides a set of functions and critical values to conduct a robust inference procedure in the presence of dependent data sequences. Our emphasis in data sets with sequential dependent structure that occurs with time series data sets. When presented with a data set with an unknown sequential structure care must be taken when conducting an inference procedure, such as hypothesis testing or constructing confidence intervals. In particular is recommended to both use a robust estimator for calculating the standard error of the parameters of interest, and to use an alternative limiting distribution of pivotal quantities and test statistics. The `fixedCV` package provides support for both objectives.
+
+The audience of the document is familiar with basic R syntax and functions, and also has some familiarity with linear regression and time series. Furthermore, the goal is to conduct inference procedures when the generating model is *unknown* but the data set is presumed to be stationary. If either of these parts is not met, then the reader may wish to pursue alternative methods.
+
+For a careful exploration of the packages utility please see sections 3-5, which use the simulated examples in section 2 to showcase various options. To see a start to finish brief example, please skip to section 6 which contains a non-simulated data set.
+
+# Estimating Standard Error For Model Parameters
+
+## Example
+
+We start by introducing a simulated data sets to help illustrate the utility of the `fixedCV` package. Let $e_t \sim WN(0, \sigma^2_e)$, a white noise process with mean 0 and variance $\sigma^2_e\geq 0$ which is fixed but unknown. Let $\beta_0, \beta_1$, and $\beta_2$ be three fixed but unknown constants. For $t = (1, 2, \dots, T)$ we consider the model
+
+\begin{align}
+Y_t = & \beta_0 + \beta_1 x_{1,t} + \beta_2 x_{2,t} + e_t \label{eq:reg_ex}
+\end{align}
+
+A preview of the data set is available below.
+
+```{r}
+# Define the ARMA(1,1) model parameters
+set.seed(62)
+
+# Error Term
+arma_model <- list(order = c(2, 0, 1), ar = c(0.1, 0.7), ma = 0.4)
+e <- arima.sim(model = arma_model, n = 300)
+
+# Regression
+ar_model <- list(order = c(1, 0, 0), ar = c(0.15))
+X1 <- arima.sim(model = ar_model, n = 300)
+X2 <- rnorm(300)
+
+sim_data <- data.frame(Y = (.5 + 1*X1 + 2*X2 + e),
+                       X1 = X1,
+                       X2 = X2)
+
+sim_data <- ts(sim_data)
+head(sim_data)
+plot(sim_data, main = "")
+```
+
+Suppose we wish to estimate our unknown parameters. Let $x'_t = [x_{1,t}, x_{2, t}]$ and $X = [x_1', x_2', \dots, x_T']'$ and $\beta = [\beta_0, \beta_1, \beta_2]'$. Our estimated parameters using least squares our $\hat{\beta} = (X'X)^{-1}X'Y$. Estimating the standard error matrix of $\hat{\beta}$ is non-trivial when we serial correlation is expected in this setting. Looking at the residual values from our least squares estimates and the trace plots of our data reveals this may be the case.
+
+```{r}
+fit <- lm(Y~ X1 + X2, data = sim_data)
+
+plot(fit$residuals)
+```
+
+```{r}
+robust_lm(fit, method ="fitted")
+```
+
+```{r}
+robust_lm(fit, method ="simulated")
+```
+
+Let $\hat{u}_t = x_t\hat{e}_t$ for $t = (1, 2, \dots, T)$, and $\hat{\Omega}$ be the estimated covariance matrix for the process $\hat{u}_t$. Then the estimated covariance matrix for $\hat{\beta}$ is represented via,
+
+\begin{equation}
+    \hat{\Sigma}_T =  \left[\frac{1}{T}\sum_{t=1}^T (x_tx_t')\right]^{-1}\hat{\Omega}_T\left[\frac{1}{T}\sum_{t=1}^T (x_tx_t')\right]^{-1}.
+    \label{eq:SV}
+\end{equation}
+
+## Long Run Variance (LRV) Estimators
+
+In situations where the underlying correlation structure of the process is unknown but stationary a long run variance estimator may be used to estimate the correlation process. Consider in examples and \ref{eq:reg_ex}, except we are not confidence the model is correctly specified. In this case, a robust hypothesis testing procedure maybe considered.
+
+In these procedures we rely on an estimate for the long run variance (LRV) which we denote $\Omega$. We consider the widely popular spectral variance (SV) estimator for $\Omega$ which has two tuning parameters: a kernel function $k(\cdot)$ and a bandwidth parameter $b \in [0,1]$. Let $\hat{\Gamma}(h)= \frac{1}{T}\sum_{t=1}^{T-h} \hat{u}_t \hat{u}_{t-h}$ sample auto-covariances. Our SV estimator is defined as,
+
+\begin{equation}
+\hat{\Omega}_T =  \sum_{h=-(T-1)}^{T-1} \kappa\left(\frac{h}{bT} \right ) \hat{\Gamma}(h).
+\label{eq:LRV}
+\end{equation}
+
+### Mother Kernels
+
+There are a large selection of choices for the kernel function. A classical set of kernels, hereby referred to as the \textit{mother kernels}, must be piece wise continuous, symmetric about 0, and its Fourier transformation must be non-negative for all frequencies greater than 0. For more details on technical details see, CITE-FixedCV-paper, and more. The `fixedCV` package supports three popular kernels that meet these criteria: Bartlett, Parzen, Tukey-Hanning (TH), Quadratic Spectral (QS).
+
+```{r, fig.width=7, eval = FALSE}
+
+the_seq <- seq(-1, 1, length.out = 200)
+
+plot(the_seq, sapply(the_seq, th), type = "l", lwd = 2,
+     xlim = c(-1, 1), xlab = "", ylab = "Weight")
+lines(the_seq, sapply(the_seq, parzen), lwd = 2, col = "#56B4E9")
+lines(the_seq, sapply(the_seq, bartlett), lwd = 2, col = "#009E73")
+lines(the_seq, sapply(the_seq, qs), lwd = 2, col ="#E69F00")
+
+legend("topright",
+       cex = .8,
+       col = c("black", "#56B4E9", "#009E73", "#E69F00"),
+       legend = c("TH", "Parzen", "Bartlett", "QS"),
+       lty = 1, lwd = 2)
+```
+
+### Lugsail Kernels
+
+In addition to the classical mother kernels we have a broader class of kernels, called the \textit{lugsail kernels} that we can also consider with this package. The lugsail kernels 'inflate' the mother kernels with two additional tuning parameters described in CITE-Vats. With these kernels we support three settings in particular: mother, zero, and over. The mother lugsail setting is just the original mother kernel as displayed in Figure
+
+### Bandwidth Selection
+
+## LRV Estimation with the `fixedCV` package
+
+# Critical Values for Robust Estimation
+
+## Fixed-$b$ Critical Values
+
+When conducting a robust inference procedure it has been well documented that the while the standard $\chi^2$ limiting distribution is asymptotically applicable to our test statistics in REF???, the sample size must typically be exceptionally large for the test statistic calculated to be reasonably represented by it. Instead, an alternative limiting distribution introduced by REF??? was introduced to combat this problem. This alternative limiting distribution captures the variability of the kernel and bandwidth of the test statistic, as opposed to the $\chi^2$ limiting distribution which does not account for these aspects.
+
+Unfortunately, the fixed-$b$ limiting distribution does not have a closed for expression that can be used to calculate the critical values analytically. Instead, practitioners have been left to approximate these critical values necessary for inference using various approximation methods. The three approximation methods are:
+
+-   **Simulation Approximation**: For each Test statistics generated
+
+-   Fitted Approximation
+
+-   Analytical Approximation
+
+## Obtaining Critical Values with the `fixedCV` package
+
+The fixed-$b$ critical values can be obtained via the `get_cv` function as part of the `fixedCV` package using all three approximation methods. The function has
+
+```{r}
+lm(1:5~ sample(1:100, 5))
+```
+
+## Generating New Critical Values with the `fixedCV` package
+
+# The `robust_lm` function in the `fixedCV` package
+
+## Options for Critical Values
+
+## Options for Bandwidth Selection
+
+## Options for Kernel Selection
+
+## Confidence Interval Estimates
+
+## Graphical Diagnostics
+
+
+# An Example with Climate Data
+
+We'll demonstrate an example of conducting inference with a real world climate data set. The `climate_data` is a provided dataset obtained using the `hockeystick` R package which has some global climate data filtered to a monthly resolution from 1984-12-31 to 2025-01-31.
+
+```{r}
+data("climate_data")
+```
+
+```{r, message = FALSE, warning = FALSE}
+library(GGally)
+GGally::ggpairs(data = climate_data,
+                columns = c("date", "carbon", "anomaly", "gmsl", "methane"),
+                progress = FALSE)
+```
+
+```{r}
+ggplot(data = climate_data, aes(x = date, y = carbon, color = anomaly)) +
+  geom_point() +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red") +
+  xlab("Date") +
+  ylab("Atmospheric CO2 (ppm)") +
+  ggtitle("Atmospheric CO2 over Time with Temperature Anomalies")
+```
+
+```{r}
+ggplot(data = climate_data, aes(x = date, y = anomaly, color = carbon)) +
+  geom_point() +
+  geom_line() +
+  scale_color_gradient(low = "blue", high = "red") +
+  xlab("Date") +
+  ylab("Temperature Anomaly w.r.t 1951-90 (Celsius)") +
+  ggtitle("Temp. Anomaly over Time with Carbon (ppm)")
+```
+
+```{r}
+# Linear model
+fit <- lm(anomaly ~ date + carbon + gmsl + methane, data = climate_data)
+
+# FixedCV
+robust_fit <- robust_lm(fit)
+robust_fit
+```
+
+```{r}
+plot(fit$residuals)
+```
+
+```{r}
+plot(fit$residuals * fit$model[,5]) # methane
+plot(fit$residuals * fit$model[,4]) # gmsl
+plot(fit$residuals * fit$model[,3]) # carbon
+plot(fit$residuals * as.numeric(fit$model[,2])) #  date
+plot(fit$residuals * fit$model[,1]) # anomaly
+```
+
+```{r, eval = FALSE}
+# Augmented Dickey-Fuller Test on univariate TS
+aTSA::adf.test(climate_data$anomaly)
+aTSA::adf.test(climate_data$carbon)
+aTSA::adf.test(climate_data$gmsl)
+aTSA::adf.test(climate_data$methane)
+```

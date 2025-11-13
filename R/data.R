@@ -84,8 +84,6 @@
 "QS_Mother_10_Master"
 
 
-
-
 #' @format NULL
 #' @rdname simulated_CV
 "QS_Zero_01_Master"
@@ -101,6 +99,94 @@
 #' @format NULL
 #' @rdname simulated_CV
 "QS_Zero_10_Master"
+
+
+#' @format NULL
+#' @rdname simulated_CV
+"QS_Over_01_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"QS_Over_025_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"QS_Over_05_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"QS_Over_10_Master"
+
+
+
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Mother_01_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Mother_025_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Mother_05_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Mother_10_Master"
+
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Zero_01_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Zero_025_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Zero_05_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Zero_10_Master"
+
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Over_01_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Over_025_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Over_05_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"Parzen_Over_10_Master"
+
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Over_01_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Over_025_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Over_05_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Over_10_Master"
+
 
 #' Climate data
 #'

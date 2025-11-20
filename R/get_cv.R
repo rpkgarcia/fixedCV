@@ -2,13 +2,7 @@
 
 # Analytical CV -----------------------------------------------------------
 
-#' Internal constants for analytical critical value computation
-#' @keywords internal
-#' @noRd
-hi <- 62
 
-#' @keywords internal
-#' @noRd
 c1 <- list(Bartlett = list(Mother = 1, Zero = 1.5, Over = 5/3),
            Parzen = list(Mother = 0.75, Zero = .875, Over = 0.875),
            TH = list(Mother = 1, Zero = 7/6, Over = 7/6),
@@ -72,7 +66,7 @@ get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail){
     k1 <- k1(kernel = the_kernel, type = lugsail, d = d, small_cv = small_cv)
     cv_by_b <- small_cv + k1*new_b
   }
-  return(cv_by_b)
+  return(d*cv_by_b)
 }
 
 
@@ -188,10 +182,4 @@ get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
   return(cv_by_b)
 }
 
-
-# Test Cases --------------------------------------------------------------
-#
-# get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "simulated")
-# get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "analytical")
-# get_cv(0.01, 1, 0.05, "Bartlett", "Zero", "fitted")
 

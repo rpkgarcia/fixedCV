@@ -29,7 +29,6 @@
 
 
 
-
 #' @format NULL
 #' @rdname simulated_CV
 "Bartlett_Zero_01_Master"
@@ -169,6 +168,41 @@
 #' @format NULL
 #' @rdname simulated_CV
 "Parzen_Over_10_Master"
+
+
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Mother_01_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Mother_025_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Mother_05_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Mother_10_Master"
+
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Zero_01_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Zero_025_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Zero_05_Master"
+
+#' @format NULL
+#' @rdname simulated_CV
+"TH_Zero_10_Master"
 
 
 #' @format NULL

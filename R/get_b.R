@@ -10,7 +10,7 @@ g_q <- list("bartlett" = 1, "parzen" = 6, "th" = pi^2/4, "qs" = 1.421223)
 #' @noRd
 b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = NA, auto_adjust = T){
 
-  try_b <- seq(0, 0.9, by = 1/big_T) #(0:(big_T)/2)/big_T
+  try_b <- seq(0, 0.99, by = 1/big_T) #(0:(big_T)/2)/big_T
   cv <- qchisq((1-alpha), d)
 
   # Type 1 error

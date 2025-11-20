@@ -50,6 +50,9 @@
 #
 
 # support functions -------------------------------------------------------
+#' Compute p-values from test statistics (internal)
+#' @keywords internal
+#' @noRd
 p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
                      lugsail = "Mother", method = "simulated"){
 
@@ -86,6 +89,52 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 
 # main  -------------------------------------------------------------------
 
+#' Robust Linear Model Inference with Fixed-b Critical Values
+#'
+#' Conducts robust inference for linear models using fixed-b asymptotics. This function
+#' computes robust standard errors, test statistics, and p-values for linear model
+#' coefficients, accounting for unknown serial correlation in the errors.
+#'
+#' @param fit An \code{lm} object from a linear regression model.
+#' @param the_kernel Character string specifying the kernel function. Options are
+#'   \code{"Bartlett"} (default), \code{"Parzen"}, \code{"TH"} (Tukey-Hanning),
+#'   or \code{"QS"} (Quadratic Spectral).
+#' @param lugsail Character string specifying the lugsail transformation. Options are
+#'   \code{"Mother"} (default), \code{"Zero"}, or \code{"Over"}.
+#' @param method Character string specifying how critical values are computed. Options are
+#'   \code{"simulated"} (default), \code{"fitted"}, or \code{"analytical"}.
+#' @param tau Numeric tolerance level for bandwidth selection. If \code{NA} (default),
+#'   uses recommended values based on lugsail type.
+#' @param alpha Numeric significance level for hypothesis tests (default is 0.05).
+#' @param conf.level Logical indicating whether to compute confidence intervals (default is FALSE).
+#'   If TRUE and alpha is one of 0.10, 0.05, 0.025, or 0.01, confidence intervals are added.
+#'
+#' @return A list containing:
+#'   \item{Summary_Table}{Data frame with coefficient estimates, robust standard errors,
+#'     t-statistics, and p-values.}
+#'   \item{F_test}{Data frame with F-statistic and p-value for joint significance test.}
+#'   \item{CV_table}{Data frame showing bandwidth (b), dimension, and critical values
+#'     at different significance levels for each coefficient and the F-test.}
+#'
+#' @export
+#' @examples
+#' \dontrun{
+#' # Simulate AR(1) data
+#' set.seed(123)
+#' n <- 100
+#' x <- arima.sim(list(ar = 0.5), n)
+#' y <- 2 + 3*x + arima.sim(list(ar = 0.7), n)
+#' fit <- lm(y ~ x)
+#'
+#' # Robust inference with default settings
+#' robust_lm(fit)
+#'
+#' # With different kernel and method
+#' robust_lm(fit, the_kernel = "QS", method = "fitted")
+#'
+#' # With confidence intervals
+#' robust_lm(fit, conf.level = TRUE)
+#' }
 robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                       method = "simulated", tau = NA, alpha = 0.05,
                       conf.level = F){
@@ -107,7 +156,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 
   if(!(alpha %in% c(.10, .05, .025, .01)) & conf.level==T){
     alpha <- 0.05
-    Warning("The arugment alpha must be equal to 0.10, 0.05, 0.025, or .01 to generate a CI. The value alpha has been changed from user input to to 0.05 to create 95% CIs.")
+    warning("The arugment alpha must be equal to 0.10, 0.05, 0.025, or .01 to generate a CI. The value alpha has been changed from user input to to 0.05 to create 95% CIs.")
   }
 
   # ------- Basic statistics needed from the LM object -------
@@ -139,7 +188,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
       conclusion[i] <- "Non-Stationary"
     }
     if(adf_results$p.value >0.05){
-      Warning(paste("Non-stationarity detected corresponding to variable", colnames(X)[i], "with p.value ",
+      warning(paste("Non-stationarity detected corresponding to variable", colnames(X)[i], "with p.value ",
                     round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
     }
   }

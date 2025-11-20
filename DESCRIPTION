@@ -1,16 +1,30 @@
 Package: fixedCV
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Fixed-b Critical Values for Robust Inference with Time Series Data
 Version: 0.1.0
-Author: Rebecca Kurtz-Garcia 
+Author: Rebecca Kurtz-Garcia
 Maintainer: Rebecca Kurtz-Garcia  <rkurtzgarcia@smith.edu>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Provides functions for computing fixed-b critical values and
+    conducting robust inference procedures for time series data with unknown
+    correlation structures. Implements long-run variance (LRV) estimators
+    using various kernel functions (Bartlett, Parzen, Tukey-Hanning,
+    Quadratic Spectral) and lugsail transformations for improved
+    finite-sample properties.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Depends: 
+Depends:
     R (>= 3.5)
-Imports: 
+Imports:
     Matrix
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
+Suggests:
+    knitr,
+    rmarkdown,
+    ggplot2,
+    aTSA,
+    tseries,
+    dplyr,
+    lubridate,
+    GGally
+VignetteBuilder: knitr

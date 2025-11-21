@@ -204,6 +204,8 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   # ------- Summary Object -------
   # Also calculates b-values that will be moved somewhere else
   summary <- matrix(0, nrow = length(coefs), ncol = 4)
+  corrected_rates <- rep(NA, length(coefs)+1)
+
   for(i in 1:length(coefs)){
 
     if(is.na(tau)){
@@ -218,6 +220,8 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                    lugsail=lugsail, tau = the_tau) # only consider the correlation levels for coef you want
     omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                            big_T, d = length(coefs))
+    corrected_rates[i] <- omega[["corrected_rates"]]
+    omega <- omega[["omega"]]
     beta_cov <- (solve(M)%*%omega%*%solve(M))
 
     # Standard error (se)
@@ -288,6 +292,8 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                  lugsail = lugsail, tau = the_tau)
   omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
                          big_T, d = length(coefs))
+  corrected_rates[length(coefs)+1] <- omega[["corrected_rates"]]
+  omega <- omega[["omega"]]
   omega  <- as.matrix(omega) # Check if computationally PD
   beta_cov <- (solve(M)%*%omega%*%solve(M))[-1, -1]
   F_stat <- big_T * coefs[-1] %*% solve(beta_cov) %*% coefs[-1]#/(length(coefs)-1)
@@ -300,9 +306,10 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   # ------- CV-Table -------
   cv_table <- rbind(cv_table, keep$cv_table)
   cv_table <- data.frame(rho = c(all_rhos, mean(all_rhos[-1])),
-                                 cv_table)
+                         corrected_rates, cv_table)
   rownames(cv_table) <- c(names(coefs), "F-test")
-  colnames(cv_table) <- c("rho","b", "dim", ".10", ".05", ".025", ".01")
+  colnames(cv_table) <- c("rho","b", "dim", "PSD Corrected Rate",
+                          ".10", ".05", ".025", ".01")
 
   # ------- Return Values -------
   return_me <- list("Summary_Table" = summary,

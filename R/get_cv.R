@@ -56,9 +56,13 @@ k2 <- function(kernel = "Bartlett", type = "Mother", small_cv = 3.841459){
 
 #' @keywords internal
 #' @noRd
-get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail){
+get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail, method){
   small_cv <- qchisq(1-alpha, df=d)
-  if(d == 1){
+  if(method == "analytical linear"){
+    k1 <- k1(kernel = the_kernel, type = lugsail, d = d, small_cv = small_cv)
+    cv_by_b <- small_cv + k1*new_b
+  }
+  if(d == 1 & method == "analytical"){
     k1 <- k1(kernel = the_kernel, type = lugsail, d = d, small_cv = small_cv)
     k2 <- k2(kernel = the_kernel, type = lugsail,  small_cv = small_cv)
     cv_by_b <- small_cv + k1*new_b + k2*new_b^2
@@ -82,8 +86,6 @@ get_cv_simulated <- function(new_b, d, alpha, the_kernel, lugsail){
   if(alpha == "010") alpha <- "10"
   if(alpha == "02.5") alpha <- "025"
   file <- paste(the_kernel, lugsail, alpha, "Master", sep = "_")
-  #file <- paste("data/", file, sep = "")
-  #the_table <- readRDS(file)
   the_table <- eval(parse(text=file))
 
   # Pick correct CV for each b
@@ -175,8 +177,8 @@ get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
     cv_by_b <- get_cv_fitted(new_b, d, alpha, the_kernel, lugsail)
   }
 
-  if(method == "analytical"){
-    cv_by_b <- get_cv_analytical(new_b, d, alpha, the_kernel, lugsail)
+  if(method == "analytical"| method == "analytical linear"){
+    cv_by_b <- get_cv_analytical(new_b, d, alpha, the_kernel, lugsail, method)
   }
 
   return(cv_by_b)

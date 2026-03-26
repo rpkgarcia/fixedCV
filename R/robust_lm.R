@@ -268,48 +268,68 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 
   }
 
-  all_rhos <- rep(NA, 1)
+  all_rhos <- rep(NA, ncol(errors))
   for(i in 1:ncol(errors)){
     all_rhos[i] <- stats::acf(errors[,i], plot = F)$acf[2]
   }
   summary$b <- NULL # delete the b column from the summary table
 
   # ------- F-test -------
-  all_rhos <- rep(0, length(coefs))
-  for(i in 1:length(coefs)){
-    all_rhos[i] <- stats::acf(errors[,-1], plot = F)$acf[2]
-  }
-  rho <- mean(all_rhos)
+  if(length(coefs)>1){
+    all_rhos <- rep(0, length(coefs))
+    for(i in 1:length(coefs)){
+      all_rhos[i] <- stats::acf(errors[,i], plot = F)$acf[2]
+    }
+    rho <- mean(all_rhos[-1])
 
-  if(is.na(tau)){
-    the_tau <- get_tau(alpha = alpha, lugsail = lugsail, big_T = big_T,
-                       d = length(coefs), rho = rho)
+    if(is.na(tau)){
+      the_tau <- get_tau(alpha = alpha, lugsail = lugsail, big_T = big_T,
+                         d = length(coefs), rho = rho)
+    } else{
+      the_tau <- tau
+    }
+
+    the_b <- get_b(errors[,-1], alpha = alpha, the_kernel = tolower(the_kernel),
+                   lugsail = lugsail, tau = the_tau)
+    omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
+                           big_T, d = length(coefs))
+    corrected_rates[length(coefs)+1] <- omega[["corrected_rates"]]
+    omega <- omega[["omega"]]
+    omega  <- as.matrix(omega) # Check if computationally PD
+    beta_cov <- (solve(M)%*%omega%*%solve(M))[-1, -1]
+    F_stat <- big_T * coefs[-1] %*% solve(beta_cov) %*% coefs[-1]#/(length(coefs)-1)
+    keep <- p_values(F_stat, the_b = the_b, the_d =c(length(coefs)-1),
+                     the_kernel = the_kernel,
+                     lugsail = lugsail, method = method)
+    F_stat <- data.frame(F_stat, keep$p_value)
+    names(F_stat) <- c("F Statistic", "P-Value")
+
+    # ------- CV-Table -------
+    if(length(coefs) == 2){
+      # Need to make sure the F-statistic values are squared
+      cv_table <- rbind(cv_table, c(keep$cv_table[1:2], keep$cv_table[3:6]^2))
+    } else{
+      # If there is more than one coefficient, this is done automatically
+      cv_table <- rbind(cv_table, keep$cv_table)
+    }
+    cv_table <- data.frame(rho = c(all_rhos, mean(all_rhos[-1])),
+                           corrected_rates, cv_table)
+    rownames(cv_table) <- c(names(coefs), "F-test")
+    colnames(cv_table) <- c("rho","PSD Corrected Rate", "b", "dim",
+                            ".10", ".05", ".025", ".01")
+
   } else{
-    the_tau <- tau
+    # ------- CV-Table -------
+    F_stat <- data.frame(summary[, "t value"]^2, summary[,"P(>|t|)"])
+    names(F_stat) <- c("F Statistic", "P-Value")
+    cv_table <- rbind(cv_table, c(cv_table[, 1:2], cv_table[, 3:6]^2))
+    cv_table <- data.frame(rho = c(all_rhos, all_rhos),
+                           corrected_rates, cv_table)
+    rownames(cv_table) <- c(names(coefs), "F-test")
+    colnames(cv_table) <- c("rho","PSD Corrected Rate", "b", "dim",
+                            ".10", ".05", ".025", ".01")
   }
 
-  the_b <- get_b(errors[,-1], alpha = alpha, the_kernel = tolower(the_kernel),
-                 lugsail = lugsail, tau = the_tau)
-  omega <- LRV_estimator(the_b, all_autocovariances, kernel_fct, lugsail,
-                         big_T, d = length(coefs))
-  corrected_rates[length(coefs)+1] <- omega[["corrected_rates"]]
-  omega <- omega[["omega"]]
-  omega  <- as.matrix(omega) # Check if computationally PD
-  beta_cov <- (solve(M)%*%omega%*%solve(M))[-1, -1]
-  F_stat <- big_T * coefs[-1] %*% solve(beta_cov) %*% coefs[-1]#/(length(coefs)-1)
-  keep <- p_values(F_stat, the_b = the_b, the_d =c(length(coefs)-1),
-                   the_kernel = the_kernel,
-                   lugsail = lugsail, method = method)
-  F_stat <- data.frame(F_stat, keep$p_value)
-  names(F_stat) <- c("F Statistic", "P-Value")
-
-  # ------- CV-Table -------
-  cv_table <- rbind(cv_table, keep$cv_table)
-  cv_table <- data.frame(rho = c(all_rhos, mean(all_rhos[-1])),
-                         corrected_rates, cv_table)
-  rownames(cv_table) <- c(names(coefs), "F-test")
-  colnames(cv_table) <- c("rho","b", "dim", "PSD Corrected Rate",
-                          ".10", ".05", ".025", ".01")
 
   # ------- Return Values -------
   return_me <- list("Summary_Table" = summary,
@@ -320,6 +340,10 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 }
 
 
+
+# ar1_data <- arima.sim(model = list(order = c(1, 0, 0), ar = 0.7), n = 200)
+# fit <- lm(c(ar1_data)~1)
+# robust_lm(fit)
 
 # robust_lm(fit)
 # robust_lm(fit, lugsail = "Zero")

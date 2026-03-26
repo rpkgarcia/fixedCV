@@ -68,9 +68,9 @@ get_cv_analytical<- function(new_b, d, alpha, the_kernel, lugsail, method){
     cv_by_b <- small_cv + k1*new_b + k2*new_b^2
   } else{
     k1 <- k1(kernel = the_kernel, type = lugsail, d = d, small_cv = small_cv)
-    cv_by_b <- small_cv + k1*new_b
+    cv_by_b <- small_cv/d + k1*new_b
   }
-  return(d*cv_by_b)
+  return(cv_by_b)
 }
 
 

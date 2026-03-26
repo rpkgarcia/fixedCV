@@ -1,7 +1,7 @@
 #' Lugsail Transformation (internal)
 #' @keywords internal
 #' @noRd
-lugsail <- function(x, lugsail_parameters, the_kernel= bartlett){
+lugsail_fct <- function(x, lugsail_parameters, the_kernel= bartlett){
   r <- lugsail_parameters$r
   c <- lugsail_parameters$c
 

@@ -1,6 +1,6 @@
 ---
 title: "An Introduction to Robust Inference for Sequential Data with the R Package fixedCV"
-author: "Rebecca Kurtz-Garcia"
+author: "Rebecca Kurtz-Garcia, Thomas Robacker"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{An Introduction to Robust Inference for Sequential Data with the R Package fixedCV}
@@ -19,18 +19,16 @@ knitr::opts_chunk$set(
 
 ```{r setup, message = FALSE, warning = FALSE}
 library(fixedCV)
-library(dplyr)
-library(lubridate)
 library(ggplot2)
 ```
 
 # Introduction
 
-The R package `fixedCV` provides a set of functions and critical values to conduct a robust inference procedure in the presence of dependent data sequences. Our emphasis in data sets with sequential dependent structure that occurs with time series data sets. When presented with a data set with an unknown sequential structure care must be taken when conducting an inference procedure, such as hypothesis testing or constructing confidence intervals. In particular is recommended to both use a robust estimator for calculating the standard error of the parameters of interest, and to use an alternative limiting distribution of pivotal quantities and test statistics. The `fixedCV` package provides support for both objectives.
+The R package `fixedCV` provides a set of functions and critical values to conduct a robust inference procedure in the presence of dependent data sequences. Our emphasis in data sets with sequential dependent structure that occurs with time series data sets. When presented with a data set with an unknown sequential structure care must be taken when conducting an inference procedure, such as hypothesis testing or constructing confidence intervals. In particular, it is recommended to use both a robust estimator for calculating the standard error of the parameters of interest, and to use an alternative limiting distribution of pivotal quantities and test statistics. The `fixedCV` package provides support for both objectives.
 
 The audience of the document is familiar with basic R syntax and functions, and also has some familiarity with linear regression and time series. Furthermore, the goal is to conduct inference procedures when the generating model is *unknown* but the data set is presumed to be stationary. If either of these parts is not met, then the reader may wish to pursue alternative methods.
 
-For a careful exploration of the packages utility please see sections 3-5, which use the simulated examples in section 2 to showcase various options. To see a start to finish brief example, please skip to section 6 which contains a non-simulated data set.
+**Vignette Structure:** - For a detailed exploration of the package's theoretical foundation and methods, read sections on *Estimating Standard Error For Model Parameters*, *Critical Values for Robust Estimation*, and *The robust_lm function*, which demonstrate various options using simulated examples. - For a quick start-to-finish example with real-world data, skip ahead to *An Example with Climate Data*.
 
 # Estimating Standard Error For Model Parameters
 
@@ -91,31 +89,33 @@ Let $\hat{u}_t = x_t\hat{e}_t$ for $t = (1, 2, \dots, T)$, and $\hat{\Omega}$ be
 
 ## Long Run Variance (LRV) Estimators
 
-In situations where the underlying correlation structure of the process is unknown but stationary a long run variance estimator may be used to estimate the correlation process. Consider in examples and \ref{eq:reg_ex}, except we are not confidence the model is correctly specified. In this case, a robust hypothesis testing procedure maybe considered.
+In situations where the underlying correlation structure of the process is unknown but stationary a long run variance estimator may be used to estimate the correlation process. Consider in examples and \ref{eq:reg_ex}, except we are not confident the model is correctly specified. In this case, a robust hypothesis testing procedure maybe considered.
 
-In these procedures we rely on an estimate for the long run variance (LRV) which we denote $\Omega$. We consider the widely popular spectral variance (SV) estimator for $\Omega$ which has two tuning parameters: a kernel function $k(\cdot)$ and a bandwidth parameter $b \in [0,1]$. Let $\hat{\Gamma}(h)= \frac{1}{T}\sum_{t=1}^{T-h} \hat{u}_t \hat{u}_{t-h}$ sample auto-covariances. Our SV estimator is defined as,
+In these procedures we rely on an estimate for the long run variance (LRV) which we denote $\Omega$. We consider the widely popular spectral variance (SV) estimator for $\Omega$ which has two tuning parameters: a kernel function $k(\cdot)$ and a bandwidth parameter $b \in [0,1]$. Let $\hat{\Gamma}(h)= \frac{1}{T}\sum_{t=1}^{T-h} \hat{u}_t \hat{u}_{t-h}$ be the sample auto-covariances. Our SV estimator is defined as,
 
 \begin{equation}
 \hat{\Omega}_T =  \sum_{h=-(T-1)}^{T-1} \kappa\left(\frac{h}{bT} \right ) \hat{\Gamma}(h).
 \label{eq:LRV}
 \end{equation}
 
+where $\kappa(x)$ is a kernel function.
+
 ### Mother Kernels
 
-There are a large selection of choices for the kernel function. A classical set of kernels, hereby referred to as the \textit{mother kernels}, must be piece wise continuous, symmetric about 0, and its Fourier transformation must be non-negative for all frequencies greater than 0. For more details on technical details see, CITE-FixedCV-paper, and more. The `fixedCV` package supports three popular kernels that meet these criteria: Bartlett, Parzen, Tukey-Hanning (TH), Quadratic Spectral (QS).
+There are a large selection of choices for the kernel function. A classical set of kernels, hereby referred to as the *mother kernels*, must be piece wise continuous, symmetric about 0, and its Fourier transformation must be non-negative for all frequencies greater than 0. For more details on technical aspects, see [1] and more. The `fixedCV` package supports four popular kernels that meet these criteria: Bartlett, Parzen, Tukey-Hanning (TH), Quadratic Spectral (QS).
 
-```{r, fig.width=7, eval = FALSE}
-
+```{r, fig.width=7, fig.height=5}
 the_seq <- seq(-1, 1, length.out = 200)
 
 plot(the_seq, sapply(the_seq, th), type = "l", lwd = 2,
-     xlim = c(-1, 1), xlab = "", ylab = "Weight")
+     xlim = c(-1, 1), xlab = "x", ylab = "Kernel Weight",
+     main = "Mother Kernel Functions")
 lines(the_seq, sapply(the_seq, parzen), lwd = 2, col = "#56B4E9")
 lines(the_seq, sapply(the_seq, bartlett), lwd = 2, col = "#009E73")
-lines(the_seq, sapply(the_seq, qs), lwd = 2, col ="#E69F00")
+lines(the_seq, sapply(the_seq, qs), lwd = 2, col = "#E69F00")
 
 legend("topright",
-       cex = .8,
+       cex = 0.8,
        col = c("black", "#56B4E9", "#009E73", "#E69F00"),
        legend = c("TH", "Parzen", "Bartlett", "QS"),
        lty = 1, lwd = 2)
@@ -123,109 +123,302 @@ legend("topright",
 
 ### Lugsail Kernels
 
-In addition to the classical mother kernels we have a broader class of kernels, called the \textit{lugsail kernels} that we can also consider with this package. The lugsail kernels 'inflate' the mother kernels with two additional tuning parameters described in CITE-Vats. With these kernels we support three settings in particular: mother, zero, and over. The mother lugsail setting is just the original mother kernel as displayed in Figure
+In addition to the classical mother kernels, we have a broader class of kernels called *lugsail kernels*. These kernels "inflate" the mother kernels using two additional tuning parameters (r and c), which can improve finite-sample properties. The `fixedCV` package supports three lugsail settings:
+
+-   **Mother**: No transformation, equivalent to the original kernel ($r=1$)
+-   **Zero**: Moderate inflation ($r=1, c=r^{-q}$)
+-   **Over**: Stronger inflation ($r=3, c=2/(1+r^q)$)
+
+The choice of lugsail setting affects both the LRV estimate and the corresponding fixed-b critical values. In practice, the "Mother" setting is a conservative choice, while "Over" may provide better finite-sample coverage in some settings. In particular, it is commonly recommended using the zero lugsail setting for moderately correlated data, and the over lugsail setting for strongly correlated data.
 
 ### Bandwidth Selection
 
+The bandwidth parameter $b \in [0,1]$ controls the trade-off between bias and variance in the LRV estimator. A larger bandwidth includes more autocovariances but increases variance, while a smaller bandwidth reduces variance but may introduce bias. The `fixedCV` package provides automatic bandwidth selection via the `get_b()` function, which minimizes Type I error distortion based on the data's estimated autocorrelation structure. Users can also manually specify the bandwidth or control the tolerance level $\tau$ to adjust the selection criterion.
+
 ## LRV Estimation with the `fixedCV` package
+
+The `robust_lm()` function automatically handles LRV estimation when computing robust standard errors. Here's a simple example using our simulated data:
+
+```{r}
+# Fit a linear model
+fit <- lm(Y ~ X1 + X2, data = sim_data)
+
+# Obtain robust estimates with automatic bandwidth selection
+robust_fit <- robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother")
+
+# View the summary table with robust standard errors
+robust_fit$Summary_Table
+```
+
+The function computes autocovariances of the moment conditions $\hat{u}_t = x_t \hat{e}_t$, selects the bandwidth automatically, and applies the specified kernel to estimate $\hat{\Omega}_T$, which is then used to compute robust standard errors for each coefficient.
 
 # Critical Values for Robust Estimation
 
 ## Fixed-$b$ Critical Values
 
-When conducting a robust inference procedure it has been well documented that the while the standard $\chi^2$ limiting distribution is asymptotically applicable to our test statistics in REF???, the sample size must typically be exceptionally large for the test statistic calculated to be reasonably represented by it. Instead, an alternative limiting distribution introduced by REF??? was introduced to combat this problem. This alternative limiting distribution captures the variability of the kernel and bandwidth of the test statistic, as opposed to the $\chi^2$ limiting distribution which does not account for these aspects.
+When conducting a robust inference procedure it has been well documented that while the standard $\chi^2$ limiting distribution is asymptotically applicable to our test statistics [1,2], the sample size must typically be exceptionally large for the test statistic calculated to be reasonably represented by it. Instead, an alternative limiting distribution introduced by [4] was introduced to combat this problem. This alternative limiting distribution captures the variability of the kernel and bandwidth of the test statistic, as opposed to the $\chi^2$ limiting distribution which does not account for these aspects.
 
-Unfortunately, the fixed-$b$ limiting distribution does not have a closed for expression that can be used to calculate the critical values analytically. Instead, practitioners have been left to approximate these critical values necessary for inference using various approximation methods. The three approximation methods are:
+Unfortunately, the fixed-$b$ limiting distribution does not have a closed form expression that can be used to calculate the critical values analytically. Instead, practitioners have been left to approximate these critical values necessary for inference using various approximation methods. The three approximation methods are:
 
--   **Simulation Approximation**: For each Test statistics generated
+-   Simulation Approximation: simulated quantiles specific to the kernel, bandwidth, $d$, and $\alpha$. This method is sometimes thought to generate the "true" critical value. However, it is tedious and computationally demanding.
 
--   Fitted Approximation
+-   Fitted Approximation: modeled relationships of the simulated quantiles which help extrapolate critical values at bandwidths that may not have been simulated. The model as a function of $b$ for each kernel, $d$, and significance level combinations is $\tilde{cv}^\alpha_d(b) = a_0 + a_1 b + a_2 b^2 + a_3 b^3.$ The coefficients $a_1, a_1$ and $a_3$ are fit via OLS using CV tables from the simulated approximation. The intercept is fixed to be $a_0=\chi_d^\alpha / d$. This approximation generates a single expression that can replace an entire column of a simualted CV table.
 
--   Analytical Approximation
+-   Analytical Approximation: While there are not exact expressions for the fixed-smoothing quantiles, there are analytical approximations. When $d=1$ the third-order and second-order corrected CV is $\widehat{cv}_{1,3}^\alpha(b) = \chi_1^\alpha + k_1 b + k_2 b^2$ and when $d\geq 1$ the second-order corrected CV is $\widehat{cv}_{d,2}^\alpha(b) = \chi_d^\alpha/d + k_1 b$. See [1] for more details on these formulas, including $k_1$ and $k_2$.
 
 ## Obtaining Critical Values with the `fixedCV` package
 
-The fixed-$b$ critical values can be obtained via the `get_cv` function as part of the `fixedCV` package using all three approximation methods. The function has
+The fixed-$b$ critical values can be obtained via the `get_cv()` function using three approximation methods:
 
 ```{r}
-lm(1:5~ sample(1:100, 5))
+# Simulated critical values (lookup table)
+get_cv(new_b = 0.05, d = 1, alpha = 0.05, the_kernel = "Bartlett",
+       lugsail = "Mother", method = "simulated")
+
+# Fitted polynomial approximation
+get_cv(new_b = 0.05, d = 1, alpha = 0.05, the_kernel = "Bartlett",
+       lugsail = "Mother", method = "fitted")
+
+# Analytical approximation
+get_cv(new_b = 0.05, d = 1, alpha = 0.05, the_kernel = "Bartlett",
+       lugsail = "Mother", method = "analytical")
 ```
 
+The `simulated` method uses pre-computed lookup tables, `fitted` uses polynomial approximations of those tables, and `analytical` uses closed-form approximations. The `robust_lm()` function calls `get_cv()` internally when conducting hypothesis tests.
+
 ## Generating New Critical Values with the `fixedCV` package
+
+The package includes pre-computed critical values for common kernels (Bartlett, QS), lugsail settings (Mother, Zero, Over), and significance levels (0.01, 0.025, 0.05, 0.10). Advanced users who need critical values for custom kernels or settings can generate them via simulation, though this is typically unnecessary for standard applications.
 
 # The `robust_lm` function in the `fixedCV` package
 
 ## Options for Critical Values
 
+The `robust_lm()` function accepts a `method` argument to specify the critical value approximation:
+
+-   `method = "simulated"`: Uses pre-computed lookup tables (default, most accurate)
+-   `method = "fitted"`: Uses polynomial approximations (fast, accurate)
+-   `method = "analytical"`: Uses closed-form formulas (fastest, less accurate for small samples)
+
 ## Options for Bandwidth Selection
+
+By default, `robust_lm()` selects bandwidth automatically using `get_b()`. Users can override this by specifying the `tau` parameter (tolerance level for Type I error distortion) or by providing a custom bandwidth value directly to the LRV estimator functions.
 
 ## Options for Kernel Selection
 
+Four mother kernels are available via the `the_kernel` argument:
+
+-   `"Bartlett"`: Triangular kernel
+-   `"Parzen"`: Parzen kernel
+-   `"TH"`: Tukey-Hanning kernel
+-   `"QS"`: Quadratic Spectral kernel
+
+The `lugsail` argument controls the lugsail transformation: `"Mother"` (no transformation), `"Zero"`, or `"Over"` (inflates the kernel to improve finite-sample properties).
+
 ## Confidence Interval Estimates
+
+The `Summary_Table` component of `robust_lm()` output includes robust confidence intervals for each coefficient. These intervals are constructed using the robust standard errors and the appropriate fixed-$b$ critical values, accounting for the serial correlation structure in the data.
+
+```{r, eval=FALSE}
+# Obtain robust estimates with confidence levels
+robust_fit <- robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", conf.level = TRUE)
+
+# Access confidence intervals from robust_lm output
+robust_fit$Summary_Table
+# Columns include: Estimate, Robust_SE, Lower_CI, Upper_CI, t_statistic, p_value
+```
 
 ## Graphical Diagnostics
 
+When working with time series data, it's important to examine residuals for patterns that might indicate model misspecification or serial correlation. The `robust_lm()` function works with standard `lm` objects, so you can use the residuals from your fitted model for diagnostic plots.
+
+```{r, eval=FALSE}
+# Fit the model
+fit <- lm(Y ~ X1 + X2, data = sim_data)
+
+# Time series plot of residuals
+plot(fit$residuals, type = "l", ylab = "Residuals", xlab = "Time",
+     main = "Residual Time Series Plot")
+abline(h = 0, col = "red", lty = 2)
+
+# ACF and PACF plots to check for autocorrelation
+par(mfrow = c(1, 2))
+acf(fit$residuals, main = "ACF of Residuals")
+pacf(fit$residuals, main = "PACF of Residuals")
+par(mfrow = c(1, 1))
+
+# QQ plot to check normality assumption
+qqnorm(fit$residuals)
+qqline(fit$residuals, col = "red")
+
+# Residuals vs Fitted values
+plot(fit$fitted.values, fit$residuals,
+     xlab = "Fitted Values", ylab = "Residuals",
+     main = "Residuals vs Fitted")
+abline(h = 0, col = "red", lty = 2)
+```
+
+The ACF and PACF plots are particularly useful for identifying the presence and structure of serial correlation. If significant autocorrelation is present, the robust inference procedures provided by `fixedCV` are essential for valid statistical conclusions.
+
+## Understanding the Relationship Between `lm()` and `robust_lm()`
+
+It's important to understand what `robust_lm()` does and doesn't change. The function takes a fitted `lm` object and adjusts only the inference, not the model fit itself:
+
+**What stays the same:** - Coefficient point estimates ($\hat{\beta}$) - Fitted values (`fit$fitted.values`) - Residuals (`fit$residuals`) - Predictions from the model
+
+**What changes:** - Standard errors (accounting for serial correlation via LRV estimation) - Test statistics (t-statistics, F-statistic) - P-values (using fixed-$b$ critical values) - Confidence intervals (wider to reflect dependence structure)
+
+This means for visualization and prediction, you continue to use the original `fit` object from `lm()`. For statistical inference (hypothesis testing, confidence intervals, significance), you use the output from `robust_lm()`.
+
+```{r, eval=FALSE}
+# Example workflow
+fit <- lm(Y ~ X1 + X2, data = sim_data)
+robust_fit <- robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother")
+
+# Use fit for plotting and prediction
+plot(sim_data[, 1], type = "l", ylab = "Y", main = "Observed vs Fitted")
+lines(fitted(fit), col = "blue", lwd = 2)
+legend("topleft", legend = c("Observed", "Fitted"),
+       col = c("black", "blue"), lty = 1, lwd = c(1, 2))
+
+# Use robust_fit for inference
+robust_fit$Summary_Table  # Robust standard errors, p-values, and CIs
+
+# Coefficients are identical between lm() and robust_lm()
+coef(fit)
+robust_fit$Summary_Table[, "Estimate"]
+```
+
+The key insight is that `robust_lm()` provides valid inference when residuals are serially correlated, without requiring you to re-estimate the model.
 
 # An Example with Climate Data
 
-We'll demonstrate an example of conducting inference with a real world climate data set. The `climate_data` is a provided dataset obtained using the `hockeystick` R package which has some global climate data filtered to a monthly resolution from 1984-12-31 to 2025-01-31.
+We demonstrate robust inference using the `climate_data` dataset included in the package. This dataset, obtained from the `hockeystick` R package, contains monthly global climate measurements from December 1984 to January 2025. The variables include:
+
+-   `date`: Observation date
+-   `carbon`: Atmospheric CO2 concentration (ppm)
+-   `anomaly`: Temperature anomaly relative to 1951-1990 baseline (°C)
+-   `gmsl`: Global mean sea level (mm)
+-   `methane`: Atmospheric methane concentration (ppb)
 
 ```{r}
 data("climate_data")
+head(climate_data)
 ```
 
-```{r, message = FALSE, warning = FALSE}
+## Exploratory Data Analysis
+
+First, we examine the relationships between variables. Climate time series typically exhibit strong temporal dependencies, making this an ideal application for robust inference methods.
+
+```{r, message = FALSE, warning = FALSE, eval = FALSE}
 library(GGally)
+
+# Pairwise relationships showing strong linear trends and correlations
+custom_lower <- function(data, mapping) {
+  ggplot(data = data, mapping = mapping) +
+    geom_line(alpha = 0.8, color = "dodgerblue") +
+    geom_smooth(method = "lm", color = "orange",
+                linetype = "solid", linewidth = 0.6)
+}
+
 GGally::ggpairs(data = climate_data,
                 columns = c("date", "carbon", "anomaly", "gmsl", "methane"),
-                progress = FALSE)
+                progress = FALSE,
+                axisLabels = "show",
+                columnLabels = c("Date", "Carbon", "Anomaly", "GMSL", "Methane"),
+                lower = list(continuous = custom_lower)) +
+                ggtitle("Climate Data Pair Plot") +
+                theme_bw()
 ```
 
-```{r}
-ggplot(data = climate_data, aes(x = date, y = carbon, color = anomaly)) +
-  geom_point() +
-  geom_line() +
-  scale_color_gradient(low = "blue", high = "red") +
+```{r, fig.width=7, fig.height=4}
+# Visualize the primary relationship: temperature anomaly over time
+ggplot(data = climate_data, aes(x = date, y = anomaly)) +
+  geom_line(color = "dodgerblue") +
+  geom_smooth(method = "lm", color = "orange", se = FALSE) +
   xlab("Date") +
-  ylab("Atmospheric CO2 (ppm)") +
-  ggtitle("Atmospheric CO2 over Time with Temperature Anomalies")
+  ylab("Temperature Anomaly (°C)") +
+  ggtitle("Global Temperature Anomaly (1984-2025)") +
+  theme_bw()
 ```
 
-```{r}
-ggplot(data = climate_data, aes(x = date, y = anomaly, color = carbon)) +
-  geom_point() +
-  geom_line() +
-  scale_color_gradient(low = "blue", high = "red") +
-  xlab("Date") +
-  ylab("Temperature Anomaly w.r.t 1951-90 (Celsius)") +
-  ggtitle("Temp. Anomaly over Time with Carbon (ppm)")
-```
+## Model Fitting and Robust Inference
+
+We fit a linear model to examine how temperature anomaly relates to the other climate variables:
 
 ```{r}
-# Linear model
+# Fit the model
 fit <- lm(anomaly ~ date + carbon + gmsl + methane, data = climate_data)
 
-# FixedCV
-robust_fit <- robust_lm(fit)
-robust_fit
+# Standard summary (assumes i.i.d. errors)
+summary(fit)
 ```
+
+Climate data typically exhibits strong serial correlation, which violates the i.i.d. assumption underlying standard inference. We can visualize this in the residuals:
+
+```{r, fig.width=7, fig.height=4}
+# Plot residuals to check for serial correlation
+plot(fit$residuals, type = "l", ylab = "Residuals", xlab = "Time Index",
+     main = "Residuals from Climate Model")
+abline(h = 0, col = "red", lty = 2)
+```
+
+The residual plot shows clear patterns, suggesting serial correlation. To account for this, we use `robust_lm()` with the Bartlett kernel:
 
 ```{r}
-plot(fit$residuals)
+# Robust inference accounting for serial correlation
+robust_fit <- robust_lm(fit, the_kernel = "Bartlett",
+                        lugsail = "Mother", method = "fitted")
+
+# Compare robust vs. standard results
+robust_fit$Summary_Table
 ```
+
+We can visualize the model fit by comparing observed temperature anomalies with the fitted values:
+
+```{r, fig.width=7, fig.height=4}
+# Plot observed vs fitted values
+plot(climate_data$anomaly, type = "l", ylab = "Temperature Anomaly (°C)",
+     xlab = "Time Index", main = "Observed vs Fitted Temperature Anomaly")
+lines(fitted(fit), col = "blue", lwd = 2)
+legend("topleft", legend = c("Observed", "Fitted"),
+       col = c("black", "blue"), lty = 1, lwd = c(1, 2))
+```
+
+The model captures the overall trend in temperature anomaly well. However, the robust standard errors are typically larger than the standard errors from `summary(fit)`, reflecting the additional uncertainty from serial correlation. The p-values and confidence intervals are adjusted accordingly using fixed-$b$ critical values.
+
+## Comparing Critical Value Methods
+
+The `robust_lm()` function supports three methods for obtaining critical values. Here we compare the results using different methods:
 
 ```{r}
-plot(fit$residuals * fit$model[,5]) # methane
-plot(fit$residuals * fit$model[,4]) # gmsl
-plot(fit$residuals * fit$model[,3]) # carbon
-plot(fit$residuals * as.numeric(fit$model[,2])) #  date
-plot(fit$residuals * fit$model[,1]) # anomaly
+# Simulated method (most accurate, uses lookup tables)
+sim_fit <- robust_lm(fit, the_kernel = "Bartlett",
+                     lugsail = "Mother", method = "simulated")
+
+# Fitted method (fast, polynomial approximation)
+fitted_fit <- robust_lm(fit, the_kernel = "Bartlett",
+                        lugsail = "Mother", method = "fitted")
+
+# Analytical method (fastest, closed-form approximation)
+analytical_fit <- robust_lm(fit, the_kernel = "Bartlett",
+                            lugsail = "Mother", method = "analytical")
 ```
 
-```{r, eval = FALSE}
-# Augmented Dickey-Fuller Test on univariate TS
-aTSA::adf.test(climate_data$anomaly)
-aTSA::adf.test(climate_data$carbon)
-aTSA::adf.test(climate_data$gmsl)
-aTSA::adf.test(climate_data$methane)
+All three methods produce very similar coefficient estimates and standard errors. The primary difference lies in the critical values used for hypothesis testing, which affects p-values and confidence intervals. For most applications, the `fitted` method provides an excellent balance of speed and accuracy. Here's the summary from the fitted method:
+
+```{r}
+fitted_fit$Summary_Table
 ```
+
+# References
+
+[1] R. Kurtz-Garcia, T. Robacker, M. Griffin (2026). Practical Considerations for Fixed-Smoothing Limiting Distributions. To Appear Soon.
+
+[2] Kiefer, N. M., & Vogelsang, T. J. (2005). A new asymptotic theory for heteroskedasticity-autocorrelation robust tests. *Econometric Theory*, 21(6), 1130-1164.
+
+[3] Newey, W. K., & West, K. D. (1987). A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix. *Econometrica*, 55(3), 703-708.
+
+[4] Andrews, D. W. K. (1991). Heteroskedasticity and autocorrelation consistent covariance matrix estimation. *Econometrica*, 59(3), 817-858.
+
+[5] Sun, Y., Phillips, P. C. B., & Jin, S. (2008). Optimal bandwidth selection in heteroskedasticity-autocorrelation robust testing. *Econometrica*, 76(1), 175-194.

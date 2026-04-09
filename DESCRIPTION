@@ -26,5 +26,6 @@ Suggests:
     tseries,
     dplyr,
     lubridate,
-    GGally
+    GGally,
+    lmtest
 VignetteBuilder: knitr

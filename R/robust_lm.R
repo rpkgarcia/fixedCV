@@ -180,14 +180,16 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     parameter[i] <- adf_results$parameter
     p.value[i] <- adf_results$p.value
     if(p.value[i]<=0.01){
-      p.value[i] <- "<=0.1"
+      p.value[i] <- "<=0.01"
     }
+
     if(p.value[i]< 0.05){
       conclusion[i] <- "Stationary"
     } else {
       conclusion[i] <- "Non-Stationary"
     }
-    if(adf_results$p.value >0.05){
+
+    if(adf_results$p.value > 0.05){
       warning(paste("Non-stationarity detected corresponding to variable ", colnames(X)[i], " with p.value ",
                     round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
     }

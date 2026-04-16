@@ -122,14 +122,24 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
   }
   rho <- mean(all_rhos)
 
+  if(rho <= 0 & lugsail != "Mother"){
+    warning(paste("Correlation coefficient ", round(rho, 3), "is negative. Mother lugsail settings are recommended."))
+  }
+
   # If tau is not provided, use recommended settings
   if(is.na(tau)){
     tau <- get_tau(alpha = alpha, lugsail = lugsail, big_T = big_T, d = d, rho = rho)
   }
 
+  # Check kernel input
+  if(!(tolower(the_kernel) %in% c("bartlett", "parzen", "qs", "th"))){
+    warning("Incorrect input for `the_kernel`, only `Bartlett`, `Parzen`, `QS`, and `TH` are supported. The Bartlett kernel will be used.")
+    the_kernel = "Bartlett"
+  }
+
   # kernel statistic information
   q <- 1
-  if(the_kernel != "bartlett"){q <- 2}
+  if(tolower(the_kernel) != "bartlett"){q <- 2}
   if(q == 1){
     w_q <- 2*rho/(1-rho^2)
   } else {w_q <- 2*rho/(1-rho)^2 }
@@ -140,7 +150,7 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
   if(lugsail == "Zero"){
     g_q <- 0
   } else if (lugsail == "Over"){
-    g_q <- - g_q
+    g_q <- -g_q
   }
 
   if(lugsail == "Mother"){

@@ -56,6 +56,11 @@
 p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
                      lugsail = "Mother", method = "simulated"){
 
+  if(the_d >12 & method != "analytical"){
+    method = "analytical"
+    warning("More than 12 coefficients are used. Only the `analytical` critical value is supported for this many dimensions. Method was switched to `analytical`.")
+  }
+
   # Get the appropriate CVs
   CV_01  <- get_cv(the_b, the_d, 0.01, the_kernel, lugsail, method)*the_d
   CV_025 <- get_cv(the_b, the_d, 0.025, the_kernel, lugsail, method)*the_d

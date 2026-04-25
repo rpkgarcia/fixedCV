@@ -169,6 +169,12 @@ get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
 #' get_cv(0.1, d = 3, alpha = 0.05)
 get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
                    lugsail = "Mother", method = "simulated"){
+
+  if(d >12 & method != "analytical"){
+    method = "analytical"
+    warning("More than 12 coefficients are used. Only the `analytical` critical value is supported for this many dimensions. Method was switched to `analytical`.")
+  }
+
   if(method == "simulated"){
     cv_by_b <- get_cv_simulated(new_b, d, alpha, the_kernel, lugsail)
   }

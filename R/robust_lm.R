@@ -205,6 +205,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     }
   }
   adf <- data.frame(statistic, parameter, conclusion, p.value)
+  rownames(adf) <- colnames(X)
 
   # ------- AutoCovariance Matrices  -------
   # [#, ] the lag (0, ..., big_T-1)

@@ -144,16 +144,21 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                       method = "simulated", tau = NA, alpha = 0.05,
                       conf.level = F){
 
+  # ------- Convert string inputs to lowercase -------
+  the_kernel <- tolower(the_kernel)
+  lugsail <- tolower(lugsail)
+  method <- tolower(method)
+
   # ------- Basic statistics needed from the LM object -------
   kernel_fct <- bartlett
   q <- 1
-  if(the_kernel == "QS"){
+  if(the_kernel == "qs"){
     kernel_fct <- qs
     q <- 2
-  } else if(the_kernel == "TH"){
+  } else if(the_kernel == "th"){
     kernel_fct <- th
     q <- 2
-  } else if(the_kernel == "Parzen"){
+  } else if(the_kernel == "parzen"){
     kernel_fct <- parzen
     q <- 2
   }
@@ -183,7 +188,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     adf_results <- suppressWarnings(tseries::adf.test(errors[,i]))
     statistic[i] <- adf_results$statistic
     parameter[i] <- adf_results$parameter
-    p.value[i] <- adf_results$p.value
+    p.value[i] <- round(adf_results$p.value, digits = 3)
     if(p.value[i]<=0.01){
       p.value[i] <- "<=0.01"
     }

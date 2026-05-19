@@ -29,11 +29,14 @@ lugsail_fct <- function(x, lugsail_parameters, the_kernel= bartlett){
 get_lugsail_parameters <- function(big_T, q, method = "Zero",
                                    b = 0.75*big_T^(-2*q/(2*q+1))){
 
-  if(method == "Over"){
+  # ------- Convert string input to lowercase -------
+  method <- tolower(method)
+
+  if(method == "over"){
     r <- 3
     c <- 2/(1+r^q)
 
-  } else if(method == "Adaptive"){
+  } else if(method == "adaptive"){
     r <- 2
     M  <- big_T * b
     c_num <- (log(big_T) - log(M) + 1)

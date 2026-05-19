@@ -115,14 +115,14 @@ LRV_estimator <- function(b, all_autocovariances,
   omega_mother <- LRV_mother_estimator(b, all_autocovariances, the_kernel,
                                        big_T = big_T, d=ncol(all_autocovariances))
   # Mother Kernel
-  if(lugsail_type == "Mother"){
+  if(lugsail_type == "mother"){
     omega <- omega_mother
     corrected_rates <- NA
   }
 
   # Zero Lugsail
-  else if(lugsail_type == "Zero" || lugsail_type == "zero"){
-    lug_para <- get_lugsail_parameters(big_T, q = q, method = "Zero")
+  else if(lugsail_type == "zero"){
+    lug_para <- get_lugsail_parameters(big_T, q = q, method = "zero")
     omega <- LRV_lugsail_estimator(b, all_autocovariances,
                                 the_kernel = the_kernel,
                                 lugsail_parameters = lug_para,
@@ -134,9 +134,9 @@ LRV_estimator <- function(b, all_autocovariances,
   }
 
   # Over Lugsail
-  else if (lugsail_type == "Over"){
+  else if (lugsail_type == "over"){
     # Over Lugsail
-    lug_para <- get_lugsail_parameters(big_T, q = q, method = "Over")
+    lug_para <- get_lugsail_parameters(big_T, q = q, method = "over")
     omega <- LRV_lugsail_estimator(b, all_autocovariances,
                                    the_kernel = the_kernel,
                                    lugsail_parameters = lug_para,

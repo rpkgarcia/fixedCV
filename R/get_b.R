@@ -55,8 +55,11 @@ b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = NA, auto_adjust = 
 #' @keywords internal
 #' @noRd
 get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
+  # ------- Convert string inputs to lowercase -------
+  lugsail <- tolower(lugsail)
+
   # ------- If tau uses default -------
-  if(lugsail == "Zero"){
+  if(lugsail == "zero"){
     tau <- -alpha^(0.5*d)/(big_T *log(abs(rho)))
   } else{
     tau <- alpha*.15
@@ -107,6 +110,10 @@ get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
 get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother",
                   tau = NA, auto_adjust = T){
 
+  # ------- Convert string inputs to lowercase -------
+  the_kernel <- tolower(the_kernel)
+  lugsail <- tolower(lugsail)
+
   # dimensions
   if(!("matrix" %in% class(the_data))){
     the_data <- as.matrix(the_data)
@@ -122,7 +129,7 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
   }
   rho <- mean(all_rhos)
 
-  if(rho <= 0 & lugsail != "Mother"){
+  if(rho <= 0 & lugsail != "mother"){
     warning(paste("Correlation coefficient ", round(rho, 3), "is negative. Mother lugsail settings are recommended."))
   }
 
@@ -146,20 +153,20 @@ get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mothe
 
 
   # g_q based on lugsail type
-  g_q <- g_q[[tolower(the_kernel)]]
-  if(lugsail == "Zero"){
+  g_q <- g_q[[the_kernel]]
+  if(lugsail == "zero"){
     g_q <- 0
-  } else if (lugsail == "Over"){
+  } else if (lugsail == "over"){
     g_q <- -g_q
   }
 
-  if(lugsail == "Mother"){
+  if(lugsail == "mother"){
     if(tau < 0.1*alpha){
       warning("Recommended tolerance level for mother setttings is 0.1*alpha or higher.")
     }
   }
 
-  if(lugsail == "Over"){
+  if(lugsail == "over"){
     if(rho <0.9 | big_T <200){
       warning("Over lugsail is not recommended for small data sets, or data sets with low correlation.")
     }

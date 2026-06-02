@@ -169,7 +169,9 @@ get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
 #'   \code{"Mother"} (default), \code{"Zero"}, or \code{"Over"}.
 #' @param method Character string specifying computation method. Options are
 #'   \code{"simulated"} (default, uses pre-computed tables), \code{"fitted"}
-#'   (polynomial approximation), or \code{"analytical"} (closed-form formulas).
+#'   (polynomial approximation), \code{"analytical"} (closed-form formulas),
+#'   \code{"analytical"} (closed-form formulas), or \code{"adaptive"} (classical
+#'   limiting distributions). .
 #'
 #' @return Numeric vector of critical values corresponding to each bandwidth in \code{new_b}.
 #'   When \code{b = 0}, returns chi-square critical values.
@@ -191,6 +193,7 @@ get_cv_fitted <- function(new_b, d, alpha, the_kernel, lugsail){
 get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
                    lugsail = "Mother", method = "simulated"){
 
+
   # ------- Convert string inputs to lowercase -------
   the_kernel <- tolower(the_kernel)
   lugsail <- tolower(lugsail)
@@ -211,6 +214,10 @@ get_cv <- function(new_b, d = 1, alpha = 0.05, the_kernel = "Bartlett",
 
   if(method == "analytical"| method == "analytical linear"){
     cv_by_b <- get_cv_analytical(new_b, d, alpha, the_kernel, lugsail, method)
+  }
+
+  if(method == "adaptive"){
+    cv_by_b <- qchisq(1-alpha, df=d)/d
   }
 
   return(cv_by_b)

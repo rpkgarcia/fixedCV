@@ -88,7 +88,20 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
   }else if(abs(test_stat)>CV_10){
     p_value <- "<0.10"
   }
-  cv_table <- c(the_b, the_d, CV_10, CV_05, CV_025, CV_01)
+
+  # Adaptive p-value, get the actual p-value
+  if(method == "adaptive"){
+    p_value <- round(1-pchisq(test_stat*the_d, df=the_d), 3)
+    if(p_value <0.001){
+      p_value <- paste(p_value, "**", sep = "")
+    }else if(p_value <0.01){
+      p_value <-  paste(p_value, "*", sep = "")
+    }else if(p_value <0.05){
+      p_value <-  paste(p_value, ".", sep = "")
+    }
+  }
+
+  cv_table <- round(c(the_b, the_d, CV_10, CV_05, CV_025, CV_01), 4)
   return(list(p_value = p_value, cv_table = cv_table))
 }
 
@@ -107,7 +120,7 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #' @param lugsail Character string specifying the lugsail transformation. Options are
 #'   \code{"Mother"} (default), \code{"Zero"}, or \code{"Over"}.
 #' @param method Character string specifying how critical values are computed. Options are
-#'   \code{"simulated"} (default), \code{"fitted"}, or \code{"analytical"}.
+#'   \code{"simulated"} (default), \code{"fitted"}, \code{"analytical"}, or \code{"adaptive"}.
 #' @param tau Numeric tolerance level for bandwidth selection. If \code{NA} (default),
 #'   uses recommended values based on lugsail type.
 #' @param alpha Numeric significance level for hypothesis tests (default is 0.05).
@@ -120,6 +133,7 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #'   \item{F_test}{Data frame with F-statistic and p-value for joint significance test.}
 #'   \item{CV_table}{Data frame showing bandwidth (b), dimension, and critical values
 #'     at different significance levels for each coefficient and the F-test.}
+#'   \item{vcov}{The variance covariance matrix of the regression coefficients.}
 #'
 #' @export
 #' @examples
@@ -166,7 +180,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
 
   if(!(alpha %in% c(.10, .05, .025, .01)) & conf.level==T){
     alpha <- 0.05
-    warning("The arugment alpha must be equal to 0.10, 0.05, 0.025, or .01 to generate a CI. The value alpha has been changed from user input to to 0.05 to create 95% CIs.")
+    warning("The arugment alpha must be equal to 0.10, 0.05, 0.025, or .01 to generate a CI. The value alpha has been changed from user input to 0.05 to create 95% CIs.")
   }
 
   # ------- Basic statistics needed from the LM object -------
@@ -178,34 +192,34 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   big_T <- nrow(fit$model)
   M <- t(X)%*%X/big_T
 
-  # ------- Checking if Stationary -------
-  statistic <- rep(NA, ncol(X))
-  parameter <- rep(NA, ncol(X))
-  conclusion <- rep(NA, ncol(X))
-  p.value <- rep(NA, ncol(X))
-
-  for(i in 1:ncol(X)){
-    adf_results <- suppressWarnings(tseries::adf.test(errors[,i]))
-    statistic[i] <- adf_results$statistic
-    parameter[i] <- adf_results$parameter
-    p.value[i] <- round(adf_results$p.value, digits = 3)
-    if(p.value[i]<=0.01){
-      p.value[i] <- "<=0.01"
-    }
-
-    if(p.value[i]< 0.05){
-      conclusion[i] <- "Stationary"
-    } else {
-      conclusion[i] <- "Non-Stationary"
-    }
-
-    if(adf_results$p.value > 0.05){
-      warning(paste("Non-stationarity detected corresponding to variable ", colnames(X)[i], " with p.value ",
-                    round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
-    }
-  }
-  adf <- data.frame(statistic, parameter, conclusion, p.value)
-  rownames(adf) <- colnames(X)
+  # # ------- Checking if Stationary -------
+  # statistic <- rep(NA, ncol(X))
+  # parameter <- rep(NA, ncol(X))
+  # conclusion <- rep(NA, ncol(X))
+  # p.value <- rep(NA, ncol(X))
+  #
+  # for(i in 1:ncol(X)){
+  #   adf_results <- suppressWarnings(tseries::adf.test(errors[,i]))
+  #   statistic[i] <- adf_results$statistic
+  #   parameter[i] <- adf_results$parameter
+  #   p.value[i] <- round(adf_results$p.value, digits = 3)
+  #   if(p.value[i]<=0.01){
+  #     p.value[i] <- "<=0.01"
+  #   }
+  #
+  #   if(p.value[i]< 0.05){
+  #     conclusion[i] <- "Stationary"
+  #   } else {
+  #     conclusion[i] <- "Non-Stationary"
+  #   }
+  #
+  #   if(adf_results$p.value > 0.05){
+  #     warning(paste("Non-stationarity detected corresponding to variable ", colnames(X)[i], " with p.value ",
+  #                   round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
+  #   }
+  # }
+  # adf <- data.frame(statistic, parameter, conclusion, p.value)
+  # rownames(adf) <- colnames(X)
 
   # ------- AutoCovariance Matrices  -------
   # [#, ] the lag (0, ..., big_T-1)
@@ -336,6 +350,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
     F_stat <- data.frame(summary[, "t value"]^2, summary[,"P(>|t|)"])
     names(F_stat) <- c("F Statistic", "P-Value")
     cv_table <- rbind(cv_table, c(cv_table[, 1:2], cv_table[, 3:6]^2))
+    corrected_rates[2] <- corrected_rates[1]
     cv_table <- data.frame(rho = c(all_rhos, all_rhos),
                            corrected_rates, cv_table)
     rownames(cv_table) <- c(names(coefs), "F-test")
@@ -344,11 +359,16 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   }
 
 
+  # Don't need PSD corrected rate if using a mother kernel
+  if(lugsail == "mother"){
+    cv_table[, "PSD Corrected Rate"] <- NULL
+  }
+
   # ------- Return Values -------
   return_me <- list("Summary_Table" = summary,
                     "F_test" = F_stat,
-                    "CV_table" = cv_table,
-                    "Augmented_DickeyFuller" = adf)
+                    "CV_table" = round(cv_table, 4),
+                    "vcov" = as.matrix((solve(M)%*%omega%*%solve(M))/big_T))
   return(return_me)
 }
 

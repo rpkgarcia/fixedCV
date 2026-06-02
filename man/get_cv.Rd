@@ -31,7 +31,9 @@ Default is 1 for t-tests.}
 
 \item{method}{Character string specifying computation method. Options are
 \code{"simulated"} (default, uses pre-computed tables), \code{"fitted"}
-(polynomial approximation), or \code{"analytical"} (closed-form formulas).}
+(polynomial approximation), \code{"analytical"} (closed-form formulas),
+\code{"analytical"} (closed-form formulas), or \code{"adaptive"} (classical
+limiting distributions). .}
 }
 \value{
 Numeric vector of critical values corresponding to each bandwidth in \code{new_b}.

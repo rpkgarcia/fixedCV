@@ -25,7 +25,7 @@ or \code{"QS"} (Quadratic Spectral).}
 \code{"Mother"} (default), \code{"Zero"}, or \code{"Over"}.}
 
 \item{method}{Character string specifying how critical values are computed. Options are
-\code{"simulated"} (default), \code{"fitted"}, or \code{"analytical"}.}
+\code{"simulated"} (default), \code{"fitted"}, \code{"analytical"}, or \code{"adaptive"}.}
 
 \item{tau}{Numeric tolerance level for bandwidth selection. If \code{NA} (default),
 uses recommended values based on lugsail type.}
@@ -42,6 +42,7 @@ A list containing:
   \item{F_test}{Data frame with F-statistic and p-value for joint significance test.}
   \item{CV_table}{Data frame showing bandwidth (b), dimension, and critical values
     at different significance levels for each coefficient and the F-test.}
+  \item{vcov}{The variance covariance matrix of the regression coefficients.}
 }
 \description{
 Conducts robust inference for linear models using fixed-b asymptotics. This function

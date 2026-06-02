@@ -7,7 +7,8 @@ NULL
 #' @noRd
 LRV_mother_estimator <- function(b, all_autocovariances, the_kernel,
                                  big_T= nrow(all_autocovariances),
-                                 d = ncol(all_autocovariances)){
+                                 d = sqrt(ncol(all_autocovariances))){
+
   # Make the weights that correspond to the autocovariances
   M <- b*big_T
   if(M == 0){
@@ -26,7 +27,7 @@ LRV_mother_estimator <- function(b, all_autocovariances, the_kernel,
     omega_hats <- matrix(omega_hats, 1, 1)
   } else{
     omega_hats <- W %*% all_autocovariances
-    omega_hats <- matrix(omega_hats, nrow = sqrt(d))
+    omega_hats <- matrix(omega_hats, nrow = d)
   }
   return(omega_hats)
 }
@@ -42,7 +43,7 @@ LRV_mother_estimator <- function(b, all_autocovariances, the_kernel,
 LRV_lugsail_estimator <- function(b, all_autocovariances,
                           the_kernel, lugsail_parameters = list(r = 1, c= 0),
                           mother_omega, big_T= nrow(all_autocovariances),
-                          d = ncol(all_autocovariances)){
+                          d = sqrt(ncol(all_autocovariances))){
 
   # Make the weights that correspond to the autocovariances
   M <- b*big_T
@@ -52,6 +53,9 @@ LRV_lugsail_estimator <- function(b, all_autocovariances,
     new_weights <- sapply(0:(big_T -1)/(M), lugsail_fct, the_kernel = the_kernel,
                           lugsail_parameters = lugsail_parameters)
   }
+
+
+
   W <- new_weights
   W <- t(as.matrix(W))
   colnames(W) = paste("Lag=", 0:(big_T-1), sep = "")
@@ -60,9 +64,10 @@ LRV_lugsail_estimator <- function(b, all_autocovariances,
   if(1 %in% dim(all_autocovariances)){
     omega_hats <- sum(W *all_autocovariances)
     omega_hats <- matrix(omega_hats, 1, 1)
+    d <- 1
   } else{
     omega_hats <- W %*% all_autocovariances
-    omega_hats <- matrix(omega_hats, nrow = sqrt(d))
+    omega_hats <- matrix(omega_hats, nrow = d)
   }
   #omega_hats <- W %*% all_autocovariances
   #omega_hats <- matrix(omega_hats, nrow = d)
@@ -73,7 +78,7 @@ LRV_lugsail_estimator <- function(b, all_autocovariances,
 
   corrected_rates <- 0
 
-  for(i in 1:sqrt(d)){
+  for(i in 1:d){
     if(omega_hats[i, i] <= 0){
       corrected_rates <- corrected_rates + 1
       omega_hats[i, i] <- mother_omega[i,i]
@@ -92,7 +97,7 @@ LRV_lugsail_estimator <- function(b, all_autocovariances,
 #' @noRd
 LRV_estimator <- function(b, all_autocovariances,
                           the_kernel, lugsail_type,
-                          big_T= nrow(all_autocovariances),
+                          big_T = nrow(all_autocovariances),
                           d = ncol(all_autocovariances),
                           q = NA){
 
@@ -109,11 +114,10 @@ LRV_estimator <- function(b, all_autocovariances,
     warning("Custom kernel function and non-mother kernel selected, but no value for q is supplied.
             Please supply either the q value or select a different kernel.")
   }
-  #print(paste("q =", q))
 
   # Start with making the mother estimator
   omega_mother <- LRV_mother_estimator(b, all_autocovariances, the_kernel,
-                                       big_T = big_T, d=ncol(all_autocovariances))
+                                       big_T = big_T, d = d)
   # Mother Kernel
   if(lugsail_type == "mother"){
     omega <- omega_mother
@@ -127,7 +131,7 @@ LRV_estimator <- function(b, all_autocovariances,
                                 the_kernel = the_kernel,
                                 lugsail_parameters = lug_para,
                                 mother_omega= omega_mother,
-                                d=ncol(all_autocovariances))
+                                big_T = big_T, d = d)
 
     corrected_rates <- omega[["corrected_rates"]]
     omega <- omega[["omega"]]
@@ -141,7 +145,7 @@ LRV_estimator <- function(b, all_autocovariances,
                                    the_kernel = the_kernel,
                                    lugsail_parameters = lug_para,
                                    mother_omega= omega_mother,
-                                   d=ncol(all_autocovariances))
+                                   big_T = big_T, d = d)
     corrected_rates <- omega[["corrected_rates"]]
     omega <- omega[["omega"]]
   }

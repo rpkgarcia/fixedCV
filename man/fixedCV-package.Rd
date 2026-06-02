@@ -75,4 +75,14 @@ Useful links:
   \item Bandwidth selection: \code{\link{get_b}}
 }
 }
+\author{
+\strong{Maintainer}: Rebecca Kurtz-Garcia \email{rkurtzgarcia@smith.edu}
+
+Authors:
+\itemize{
+  \item Rebecca Kurtz-Garcia \email{rkurtzgarcia@smith.edu}
+  \item Thomas Robacker \email{trobacker@umass.edu}
+}
+
+}
 \keyword{internal}

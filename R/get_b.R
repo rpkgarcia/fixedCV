@@ -91,7 +91,26 @@ get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
 #' @param auto_adjust Logical indicating whether to automatically increase tolerance
 #'   if no suitable bandwidth is found. Default is \code{TRUE}.
 #'
+#' @details
+#' Returns a bandwidth optimized for hypothesis testing. If no hypothesis test is
+#' being conducted, using \code{alpha = 0.05} as a guideline is recommended. The
+#' selected bandwidth is the smallest value whose Type I error rate falls within
+#' \code{tau} of \code{alpha}. If no bandwidth yields a Type I error rate within
+#' \code{tau} of \code{alpha} and \code{auto_adjust = TRUE}, then \code{tau} is
+#' increased by 25\% iteratively until a bandwidth satisfies the criterion.
+#'
+#' When \code{lugsail = "Zero"}, the default setting \code{tau = NA} uses the
+#' tolerance recommended by Kurtz-Garcia and Flegal (2026). For other lugsail
+#' settings, larger tolerance levels are typically needed, hence when
+#' \code{tau = NA}, the default is set to \code{alpha * 0.15}.
+#'
+#' @references
+#' Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
+#' Lugsail Kernels". \emph{Electornic Journal of Statistics}.
+#'
+#'
 #' @return Numeric scalar, the selected optimal bandwidth value between 0 and 1.
+#'
 #'
 #' @export
 #' @examples

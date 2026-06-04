@@ -1,54 +1,5 @@
 
 
-# Description -------------------------------------------------------------
-
-# Input:
-# - fit: lm object that needs robust inference
-# - the_kernel: the mother kernel
-# - lugsail: the lugsail setting setting
-# - method: how do you want to conduct the inference
-
-# Returns:
-# - robust_summary: a summary table of the lm object with robust inference
-# - rhos_bs: the estimated rho's and b's for the t-statistics. Will be a matrix where
-#            each row is a coefficient (and F-stat), and there is two columns, the rhos and bs selected
-# - F_stat: this will be the F-statistic and corresponding p-value
-# - model_details: will return the the_kernel, lugsail, and CV method.
-
-
-
-# simulate an example data set --------------------------------------------
-
-#
-# # Multivariate
-# set.seed(62)
-# d <- 5
-# big_T <- 200
-# model_rho <- 0.7
-# rho_matrix <- matrix(0, nrow = d, ncol = d)
-# diag(rho_matrix) <- model_rho
-# sim_data <- matrix(0, nrow = big_T, ncol = d)
-# sim_data[1, ] <- rnorm(d)
-# the_sd <- 1/4
-# for(i in 2:big_T){
-#   sim_data[i,] <- sim_data[i-1, ]%*%rho_matrix + rnorm(d, sd = the_sd)
-# }
-#
-# disturbance <- rnorm(1)
-# for(i in 2:big_T){
-#   disturbance[i] <- disturbance[i-1]*model_rho + rnorm(1, sd = the_sd)
-# }
-#
-# y <- apply(sim_data, 1, sum) + disturbance
-# the_data <- data.frame(y, sim_data)
-# colnames(the_data) <- c("y", paste("x", 1:d, sep = ""))
-#
-# fit <- lm(y ~. , the_data)
-#
-#
-
-#
-
 # support functions -------------------------------------------------------
 #' Compute p-values from test statistics (internal)
 #' @keywords internal
@@ -126,6 +77,28 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #' @param alpha Numeric significance level for hypothesis tests (default is 0.05).
 #' @param conf.level Logical indicating whether to compute confidence intervals (default is FALSE).
 #'   If TRUE and alpha is one of 0.10, 0.05, 0.025, or 0.01, confidence intervals are added.
+#'
+#' @details
+#' This function largely follows the robust inference procedure described in Kurtz-Garcia and
+#' Flegal (2026). Standard errors are estimated using a HAC estimator with a choice of kernel
+#' functions. Both classical adaptive limiting theory \code{`method = "adaptive"`} and fixed limiting
+#' theory are supported, with multiple approximations available for the fixed-limiting theory.
+#'
+#' The \code{method = "simulated"} option is only available for problems with up to 12 dimensions.
+#' In general, \code{method = "analytical"} is recommended for F-tests and for non-univariate tests.
+#'
+#' By default, the null hypothesis for the F-test is that all slope coefficients are zero. If
+#' the model contains no slope coefficients, the null hypothesis is that the intercept is zero.
+#'
+#' Because obtaining quantiles for the fixed-limit distribution is computationally expensive,
+#' exact p-values are not reported. Instead, thresholds are given indicating if the
+#' p-value is above 0.10 (>= 0.10), between 0.10 and 0.05 (<0.10), between 0.05 and 0.025 (<0.05.),
+#' between 0.025 and 0.01 (<0.025.), and less than 0.01 (<0.01*).
+#' For the same reason, confidence intervals are only available for a limited set of confidence levels.
+#'
+#' @references
+#' Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
+#' Lugsail Kernels". \emph{Electornic Journal of Statistics}.
 #'
 #' @return A list containing:
 #'   \item{Summary_Table}{Data frame with coefficient estimates, robust standard errors,
@@ -371,28 +344,4 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                     "vcov" = as.matrix((solve(M)%*%omega%*%solve(M))/big_T))
   return(return_me)
 }
-
-
-
-# ar1_data <- arima.sim(model = list(order = c(1, 0, 0), ar = 0.7), n = 200)
-# fit <- lm(c(ar1_data)~1)
-# robust_lm(fit)
-
-# robust_lm(fit)
-# robust_lm(fit, lugsail = "Zero")
-# robust_lm(fit, the_kernel = "QS")
-# robust_lm(fit, the_kernel = "QS", tau = 0.0117 )
-# robust_lm(fit, the_kernel = "QS", lugsail = "Zero")
-# robust_lm(fit, the_kernel = "QS", tau = alpha*.5)
-
-
-# robust_lm(fit, the_kernel = "QS")
-# robust_lm(fit, the_kernel = "QS", method = "analytical")
-#
-# robust_lm(fit, tau = -sqrt(alpha)/ (big_T * log(rho)))
-#
-#
-# robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", method = "analytical")
-#
-#robust_lm(fit, the_kernel = "Bartlett", lugsail = "Mother", method = "fitted")
 

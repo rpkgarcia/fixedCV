@@ -21,14 +21,9 @@ Depends:
 Imports:
     Matrix
 Suggests:
-    knitr,
-    rmarkdown,
-    ggplot2,
     aTSA,
     tseries,
     dplyr,
     lubridate,
-    GGally,
     lmtest
-VignetteBuilder: knitr
 Config/roxygen2/version: 8.0.0

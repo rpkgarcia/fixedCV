@@ -49,6 +49,24 @@ Conducts robust inference for linear models using fixed-b asymptotics. This func
 computes robust standard errors, test statistics, and p-values for linear model
 coefficients, accounting for unknown serial correlation in the errors.
 }
+\details{
+This function largely follows the robust inference procedure described in Kurtz-Garcia and
+Flegal (2026). Standard errors are estimated using a HAC estimator with a choice of kernel
+functions. Both classical adaptive limiting theory \code{`method = "adaptive"`} and fixed limiting
+theory are supported, with multiple approximations available for the fixed-limiting theory.
+
+The \code{method = "simulated"} option is only available for problems with up to 12 dimensions.
+In general, \code{method = "analytical"} is recommended for F-tests and for non-univariate tests.
+
+By default, the null hypothesis for the F-test is that all slope coefficients are zero. If
+the model contains no slope coefficients, the null hypothesis is that the intercept is zero.
+
+Because obtaining quantiles for the fixed-limit distribution is computationally expensive,
+exact p-values are not reported. Instead, thresholds are given indicating if the
+p-value is above 0.10 (>= 0.10), between 0.10 and 0.05 (<0.10), between 0.05 and 0.025 (<0.05.),
+between 0.025 and 0.01 (<0.025.), and less than 0.01 (<0.01*).
+For the same reason, confidence intervals are only available for a limited set of confidence levels.
+}
 \examples{
 \dontrun{
 # Simulate AR(1) data
@@ -67,4 +85,8 @@ robust_lm(fit, the_kernel = "QS", method = "fitted")
 # With confidence intervals
 robust_lm(fit, conf.level = TRUE)
 }
+}
+\references{
+Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
+Lugsail Kernels". \emph{Electornic Journal of Statistics}.
 }

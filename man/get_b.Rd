@@ -41,6 +41,19 @@ Selects optimal bandwidth for long-run variance estimation by controlling
 Type I error distortion. The bandwidth determines what proportion of
 autocovariances receive non-zero weight in the spectral variance estimator.
 }
+\details{
+Returns a bandwidth optimized for hypothesis testing. If no hypothesis test is
+being conducted, using \code{alpha = 0.05} as a guideline is recommended. The
+selected bandwidth is the smallest value whose Type I error rate falls within
+\code{tau} of \code{alpha}. If no bandwidth yields a Type I error rate within
+\code{tau} of \code{alpha} and \code{auto_adjust = TRUE}, then \code{tau} is
+increased by 25\% iteratively until a bandwidth satisfies the criterion.
+
+When \code{lugsail = "Zero"}, the default setting \code{tau = NA} uses the
+tolerance recommended by Kurtz-Garcia and Flegal (2026). For other lugsail
+settings, larger tolerance levels are typically needed, hence when
+\code{tau = NA}, the default is set to \code{alpha * 0.15}.
+}
 \examples{
 # Simulate AR(1) data
 set.seed(123)
@@ -54,4 +67,8 @@ get_b(data, the_kernel = "QS")
 
 # With custom tolerance
 get_b(data, tau = 0.01)
+}
+\references{
+Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
+Lugsail Kernels". \emph{Electornic Journal of Statistics}.
 }

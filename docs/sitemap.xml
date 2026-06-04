@@ -1,0 +1,18 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/articles/fixedCV-vignette.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/climate_data.html</loc></url>
+<url><loc>/reference/fitted_CV.html</loc></url>
+<url><loc>/reference/fixedCV-package.html</loc></url>
+<url><loc>/reference/get_b.html</loc></url>
+<url><loc>/reference/get_cv.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/kernels.html</loc></url>
+<url><loc>/reference/robust_lm.html</loc></url>
+<url><loc>/reference/simulated_CV.html</loc></url>
+</urlset>
+

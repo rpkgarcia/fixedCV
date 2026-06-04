@@ -6,7 +6,7 @@
 #'     statistics that account for serial correlation.
 #'   \item \strong{Long-Run Variance Estimation}: Estimate the long-run variance
 #'     matrix using various kernel functions (Bartlett, Parzen, Tukey-Hanning,
-#'     Quadratic Spectral) and lugsail adjustments via \code{\link{LRV_estimator}}.
+#'     Quadratic Spectral) and lugsail adjustments.
 #'   \item \strong{Critical Value Computation}: Obtain fixed-b critical values using
 #'     analytical, simulated, or fitted methods with \code{\link{get_cv}}.
 #'   \item \strong{Automatic Bandwidth Selection}: Select optimal bandwidth
@@ -16,11 +16,19 @@
 #' @section Getting Started:
 #' For most applications, use \code{\link{robust_lm}} as the main entry point:
 #' \preformatted{
+#' # Generate data
+#' set.seed(123)
+#' error <- arima.sim(model = list(ar = 0.7), n = 100)
+#' x1 <- rbinom(100, 1, .5)
+#' x2 <- rnorm(100)
+#' y <- 1 + 2*x1 - 0.5*x2 + error
+#' mydata <- data.frame(x1, x2, y)
+#'
 #' # Fit a linear model
 #' model <- lm(y ~ x1 + x2, data = mydata)
 #'
 #' # Conduct robust inference
-#' result <- robust_lm(model, kernel = "bartlett", lugsail = "Zero")
+#' result <- robust_lm(model, the_kernel = "bartlett", lugsail = "Zero")
 #' }
 #'
 #' @section Available Kernels:
@@ -46,13 +54,13 @@
 #'   \item \code{"simulated"}: Pre-computed lookup tables
 #'   \item \code{"fitted"}: Polynomial approximations
 #'   \item \code{"analytical"}: Closed-form approximations
+#'   \item \code{"adaptive"}: Classical limiting theory
 #' }
 #'
 #' @seealso
 #' Useful links:
 #' \itemize{
 #'   \item Main function: \code{\link{robust_lm}}
-#'   \item LRV estimation: \code{\link{LRV_estimator}}
 #'   \item Critical values: \code{\link{get_cv}}
 #'   \item Bandwidth selection: \code{\link{get_b}}
 #' }

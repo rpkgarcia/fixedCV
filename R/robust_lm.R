@@ -2,6 +2,7 @@
 
 # support functions -------------------------------------------------------
 #' Compute p-values from test statistics (internal)
+#' @importFrom stats pchisq
 #' @keywords internal
 #' @noRd
 p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
@@ -75,7 +76,7 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #' @param tau Numeric tolerance level for bandwidth selection. If \code{NA} (default),
 #'   uses recommended values based on lugsail type.
 #' @param alpha Numeric significance level for hypothesis tests (default is 0.05).
-#' @param conf.level Logical indicating whether to compute confidence intervals (default is FALSE).
+#' @param conf.int Logical indicating whether to compute confidence intervals (default is FALSE).
 #'   If TRUE and alpha is one of 0.10, 0.05, 0.025, or 0.01, confidence intervals are added.
 #'
 #' @details
@@ -125,11 +126,11 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #' robust_lm(fit, the_kernel = "QS", method = "fitted")
 #'
 #' # With confidence intervals
-#' robust_lm(fit, conf.level = TRUE)
+#' robust_lm(fit, conf.int = TRUE)
 #' }
 robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                       method = "simulated", tau = NA, alpha = 0.05,
-                      conf.level = F){
+                      conf.int = F){
 
   # ------- Convert string inputs to lowercase -------
   the_kernel <- tolower(the_kernel)
@@ -151,7 +152,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   }
 
 
-  if(!(alpha %in% c(.10, .05, .025, .01)) & conf.level==T){
+  if(!(alpha %in% c(.10, .05, .025, .01)) & conf.int==T){
     alpha <- 0.05
     warning("The arugment alpha must be equal to 0.10, 0.05, 0.025, or .01 to generate a CI. The value alpha has been changed from user input to 0.05 to create 95% CIs.")
   }
@@ -164,35 +165,6 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   errors <- errors - apply(errors, 2, mean) # center immediately
   big_T <- nrow(fit$model)
   M <- t(X)%*%X/big_T
-
-  # # ------- Checking if Stationary -------
-  # statistic <- rep(NA, ncol(X))
-  # parameter <- rep(NA, ncol(X))
-  # conclusion <- rep(NA, ncol(X))
-  # p.value <- rep(NA, ncol(X))
-  #
-  # for(i in 1:ncol(X)){
-  #   adf_results <- suppressWarnings(tseries::adf.test(errors[,i]))
-  #   statistic[i] <- adf_results$statistic
-  #   parameter[i] <- adf_results$parameter
-  #   p.value[i] <- round(adf_results$p.value, digits = 3)
-  #   if(p.value[i]<=0.01){
-  #     p.value[i] <- "<=0.01"
-  #   }
-  #
-  #   if(p.value[i]< 0.05){
-  #     conclusion[i] <- "Stationary"
-  #   } else {
-  #     conclusion[i] <- "Non-Stationary"
-  #   }
-  #
-  #   if(adf_results$p.value > 0.05){
-  #     warning(paste("Non-stationarity detected corresponding to variable ", colnames(X)[i], " with p.value ",
-  #                   round(adf_results$p.value, 4), ". Proceed with caution and consider adjusting your model.", sep = ""))
-  #   }
-  # }
-  # adf <- data.frame(statistic, parameter, conclusion, p.value)
-  # rownames(adf) <- colnames(X)
 
   # ------- AutoCovariance Matrices  -------
   # [#, ] the lag (0, ..., big_T-1)
@@ -250,7 +222,7 @@ robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
   colnames(summary) <- c("Estimate", "Std. Error", "t value","b", "P(>|t|)")
 
   # Confidence interval
-  if(conf.level == T){
+  if(conf.int == T){
       if(alpha == .10){
         col_index <- 3
       } else if(alpha == .05){

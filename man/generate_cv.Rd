@@ -64,13 +64,15 @@ Both package kernels and user supplied kernels maybe supplied. It is not recomme
 \examples{
 # Multiple b's and alpha's
 set.seed(62)
-CVs <- generate_cv(b = c(0.005, 0.006), d=1, alpha = c(0.05, 0.01))
+CVs <- generate_cv(b = c(0.005, 0.006), d=1, alpha = c(0.05, 0.01),
+num_replicates = 1000)
 CVs
 # Custom kernel function
 my_kernel <- function(x){
   k_x <- exp(-x^2/2)
   return(k_x)
 }
-CVs <- generate_cv(b = 0.005, d=1, alpha = 0.05, the_kernel = my_kernel, q = 2)
+CVs <- generate_cv(b = 0.005, d=1, alpha = 0.05, the_kernel = my_kernel,
+ q = 2, num_replicates = 1000)
 CVs
 }

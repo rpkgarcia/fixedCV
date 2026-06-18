@@ -98,8 +98,9 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #' For the same reason, confidence intervals are only available for a limited set of confidence levels.
 #'
 #' @references
-#' Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
-#' Lugsail Kernels". \emph{Electornic Journal of Statistics}.
+#' Rebecca P. Kurtz-Garcia and James M. Flegal. Inference optimal long run variance estimation
+#' with lugsail kernels, 2026. URL https://arxiv.org/abs/2606.17369.
+#'
 #'
 #' @return A list containing:
 #'   \item{Summary_Table}{Data frame with coefficient estimates, robust standard errors,

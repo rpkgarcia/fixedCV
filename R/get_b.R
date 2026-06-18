@@ -105,8 +105,8 @@ get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
 #' \code{tau = NA}, the default is set to \code{alpha * 0.15}.
 #'
 #' @references
-#' Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
-#' Lugsail Kernels". \emph{Electornic Journal of Statistics}.
+#' Rebecca P. Kurtz-Garcia and James M. Flegal. Inference optimal long run variance estimation
+#' with lugsail kernels, 2026. URL https://arxiv.org/abs/2606.17369.
 #'
 #'
 #' @return Numeric scalar, the selected optimal bandwidth value between 0 and 1.

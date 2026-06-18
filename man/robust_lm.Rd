@@ -11,7 +11,7 @@ robust_lm(
   method = "simulated",
   tau = NA,
   alpha = 0.05,
-  conf.level = F
+  conf.int = F
 )
 }
 \arguments{
@@ -32,7 +32,7 @@ uses recommended values based on lugsail type.}
 
 \item{alpha}{Numeric significance level for hypothesis tests (default is 0.05).}
 
-\item{conf.level}{Logical indicating whether to compute confidence intervals (default is FALSE).
+\item{conf.int}{Logical indicating whether to compute confidence intervals (default is FALSE).
 If TRUE and alpha is one of 0.10, 0.05, 0.025, or 0.01, confidence intervals are added.}
 }
 \value{
@@ -83,10 +83,10 @@ robust_lm(fit)
 robust_lm(fit, the_kernel = "QS", method = "fitted")
 
 # With confidence intervals
-robust_lm(fit, conf.level = TRUE)
+robust_lm(fit, conf.int = TRUE)
 }
 }
 \references{
-Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
-Lugsail Kernels". \emph{Electornic Journal of Statistics}.
+Rebecca P. Kurtz-Garcia and James M. Flegal. Inference optimal long run variance estimation
+with lugsail kernels, 2026. URL https://arxiv.org/abs/2606.17369.
 }

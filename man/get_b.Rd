@@ -69,6 +69,6 @@ get_b(data, the_kernel = "QS")
 get_b(data, tau = 0.01)
 }
 \references{
-Kurtz-Garcia, R. and Flegal, J. (2026). "Inference Optimal Long Run Variance Estimation with
-Lugsail Kernels". \emph{Electornic Journal of Statistics}.
+Rebecca P. Kurtz-Garcia and James M. Flegal. Inference optimal long run variance estimation
+with lugsail kernels, 2026. URL https://arxiv.org/abs/2606.17369.
 }

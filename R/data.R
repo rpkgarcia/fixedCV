@@ -221,3 +221,24 @@
 #' @rdname simulated_CV
 "TH_Over_10_Master"
 
+
+
+
+
+#' Stream Temperature data
+#'
+#' This data set contains daily average temperature readings in Celsius for a
+#' stream in Gill, Massachusetts. The original data was recorded via
+#' a submerged logger at 15 minutes intervals from August to December
+#' 2024 by the Organismic & Evolutionary Biology Department at the
+#' University of Massachusetts Amherst.
+#'
+#' @format A data frame with 153 rows and 3 columns:
+#' \describe{
+#'   \item{Date}{The date the temperature was recorded.}
+#'   \item{AvgTemp}{Temperature in Celsius}
+#'   \item{time_index}{index values for the date}
+#' }
+#' @name GillStream
+#' @keywords datasets
+"GillStream"

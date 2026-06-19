@@ -9,9 +9,8 @@ Authors@R: c(
 Maintainer: Rebecca Kurtz-Garcia  <rkurtzgarcia@smith.edu>
 Description: Provides functions for computing fixed-b critical values and
     conducting robust inference procedures for time series data with unknown
-    correlation structures. Implements long-run variance (LRV) estimators
-    using various kernel functions (Bartlett, Parzen, Tukey-Hanning,
-    Quadratic Spectral) and lugsail transformations for improved
+    correlation structures. Implements long-run variance estimators
+    using various kernel functions and lugsail transformations for improved
     finite-sample properties.
 License: GPL (>= 3)
 Encoding: UTF-8

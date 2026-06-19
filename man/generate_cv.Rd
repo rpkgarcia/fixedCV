@@ -65,7 +65,7 @@ Both package kernels and user supplied kernels maybe supplied. It is not recomme
 # Multiple b's and alpha's
 set.seed(62)
 CVs <- generate_cv(b = c(0.005, 0.006), d=1, alpha = c(0.05, 0.01),
-num_replicates = 1000)
+num_replicates = 100)
 CVs
 # Custom kernel function
 my_kernel <- function(x){
@@ -73,6 +73,6 @@ my_kernel <- function(x){
   return(k_x)
 }
 CVs <- generate_cv(b = 0.005, d=1, alpha = 0.05, the_kernel = my_kernel,
- q = 2, num_replicates = 1000)
+ q = 2, num_replicates = 100)
 CVs
 }

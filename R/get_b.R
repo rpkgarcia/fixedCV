@@ -8,7 +8,7 @@ g_q <- list("bartlett" = 1, "parzen" = 6, "th" = pi^2/4, "qs" = 1.421223)
 #' Bandwidth selection rule (internal)
 #' @keywords internal
 #' @noRd
-b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = NA, auto_adjust = T){
+b_rule <- function(rho, big_T, alpha, d, w_q, g_q, q=1, tau = NA, auto_adjust = TRUE){
 
   try_b <- seq(0, 0.99, by = 1/big_T) #(0:(big_T)/2)/big_T
   cv <- qchisq((1-alpha), d)
@@ -127,7 +127,7 @@ get_tau <- function(alpha = 0.05, lugsail, big_T, rho, d){
 #' # With custom tolerance
 #' get_b(data, tau = 0.01)
 get_b <- function(the_data, alpha = 0.05, the_kernel ="Bartlett", lugsail="Mother",
-                  tau = NA, auto_adjust = T){
+                  tau = NA, auto_adjust = TRUE){
 
   # ------- Convert string inputs to lowercase -------
   the_kernel <- tolower(the_kernel)

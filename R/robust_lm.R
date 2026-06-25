@@ -112,7 +112,7 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #'
 #' @export
 #' @examples
-#' \dontrun{
+#'
 #' # Simulate AR(1) data
 #' set.seed(123)
 #' n <- 100
@@ -128,10 +128,10 @@ p_values <- function(test_stat, the_b = 0, the_d = 1,  the_kernel = "Bartlett",
 #'
 #' # With confidence intervals
 #' robust_lm(fit, conf.int = TRUE)
-#' }
+#'
 robust_lm <- function(fit, the_kernel = "Bartlett", lugsail= "Mother",
                       method = "simulated", tau = NA, alpha = 0.05,
-                      conf.int = F){
+                      conf.int = FALSE){
 
   # ------- Convert string inputs to lowercase -------
   the_kernel <- tolower(the_kernel)

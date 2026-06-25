@@ -154,7 +154,7 @@ get_kernel_F_stats_uni <- function(new_b, all_sim_data, the_means,
 #' @keywords internal
 #' @noRd
 generate_cv_uni <- function(b, alpha = 0.05, the_kernel = bartlett,
-                            lugsail_type = "Mother", q=1, return_F_stats = F,
+                            lugsail_type = "Mother", q=1, return_F_stats = FALSE,
                             replicate_size = 1000, num_replicates = 50000){
 
   big_T = replicate_size
@@ -404,7 +404,7 @@ simulate_f_stat <- function(big_T = 1000, d = 1, the_kernel = bartlett, q=1,
 #' @noRd
 generate_cv_multi <- function(b, d = 2, alpha = 0.05,
                               the_kernel = bartlett, lugsail_type = "Mother",  q=1,
-                              return_F_stats = F,
+                              return_F_stats = FALSE,
                               num_replicates = 50000, replicate_size = 1000){
 
   big_T <- replicate_size
@@ -497,7 +497,7 @@ generate_cv_multi <- function(b, d = 2, alpha = 0.05,
 
 
 generate_cv <- function(b, d = 2, alpha = 0.05, the_kernel = bartlett,
-                        lugsail_type = "Mother",  q=1, return_F_stats = F,
+                        lugsail_type = "Mother",  q=1, return_F_stats = FALSE,
                         num_replicates = 50000, replicate_size = 1000){
 
   if(d == 1){

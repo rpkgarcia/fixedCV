@@ -6,7 +6,7 @@
 \alias{fixedCV-package}
 \title{fixedCV: Fixed-b Critical Values for Robust Inference with Time Series Data}
 \description{
-Provides functions for computing fixed-b critical values and conducting robust inference procedures for time series data with unknown correlation structures. Implements long-run variance estimators using various kernel functions and lugsail transformations for improved finite-sample properties.
+Provides functions for computing fixed-b critical values and conducting robust inference procedures for time series data with unknown correlation structures. Implements long-run variance estimators using various kernel functions and lugsail transformations for improved finite-sample properties as described by Kurtz-Garcia and Flegal (2026) \doi{10.48550/arXiv.2606.17369}.
 }
 \details{
 The main functionality of \code{fixedCV} includes:

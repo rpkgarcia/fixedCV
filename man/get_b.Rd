@@ -10,7 +10,7 @@ get_b(
   the_kernel = "Bartlett",
   lugsail = "Mother",
   tau = NA,
-  auto_adjust = T
+  auto_adjust = TRUE
 )
 }
 \arguments{

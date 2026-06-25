@@ -11,7 +11,7 @@ robust_lm(
   method = "simulated",
   tau = NA,
   alpha = 0.05,
-  conf.int = F
+  conf.int = FALSE
 )
 }
 \arguments{
@@ -68,7 +68,7 @@ between 0.025 and 0.01 (<0.025.), and less than 0.01 (<0.01*).
 For the same reason, confidence intervals are only available for a limited set of confidence levels.
 }
 \examples{
-\dontrun{
+
 # Simulate AR(1) data
 set.seed(123)
 n <- 100
@@ -84,7 +84,7 @@ robust_lm(fit, the_kernel = "QS", method = "fitted")
 
 # With confidence intervals
 robust_lm(fit, conf.int = TRUE)
-}
+
 }
 \references{
 Rebecca P. Kurtz-Garcia and James M. Flegal. Inference optimal long run variance estimation

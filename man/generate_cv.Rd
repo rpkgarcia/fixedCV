@@ -11,7 +11,7 @@ generate_cv(
   the_kernel = bartlett,
   lugsail_type = "Mother",
   q = 1,
-  return_F_stats = F,
+  return_F_stats = FALSE,
   num_replicates = 50000,
   replicate_size = 1000
 )
